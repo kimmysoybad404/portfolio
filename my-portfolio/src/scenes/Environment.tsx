@@ -53,12 +53,33 @@ export default function Environment() {
 
       {/* Decorative trees */}
       <Trees />
+      <Trees />
+      <Trees />
 
       {/* Decorative buildings far away */}
-      <BackgroundCity />
+      <BackgroundForest />
     </>
   );
 }
+
+const forestData = Array.from({ length: 150 }).map(() => {
+  const sideX = Math.random() > 0.5 ? 1 : -1;
+  const sideZ = Math.random() > 0.5 ? 1 : -1;
+  
+  // Trees are usually thinner and shorter than buildings
+  const treeHeight = 3 + Math.random() * 4; 
+  const treeColor = Math.random() > 0.5 ? "#2d6a4f" : "#40916c";
+
+  return {
+    pos: [
+      (15 + Math.random() * 120) * sideX, // X
+      0,                                  // Y (Base of the trunk)
+      (15 + Math.random() * 120) * sideZ  // Z
+    ] as [number, number, number],
+    height: treeHeight,
+    color: treeColor,
+  };
+});
 
 function Roads() {
   return (
@@ -131,29 +152,33 @@ function Trees() {
   );
 }
 
-function BackgroundCity() {
-  const buildings: [number, number, number, number, number][] = [
-    [55, 0, -55, 4, 12],
-    [62, 0, -48, 3, 18],
-    [50, 0, -60, 5, 8],
-    [-55, 0, 55, 4, 15],
-    [-62, 0, 48, 3, 10],
-    [55, 0, 55, 4, 20],
-    [-55, 0, -55, 5, 14],
-  ];
-
+function BackgroundForest() {
   return (
     <group>
-      {buildings.map(([x, z, w, h], i) => (
-        <mesh key={i} position={[x, h / 2, z]} castShadow>
-          <boxGeometry args={[w, h, w]} />
-          <meshStandardMaterial
-            color={i % 2 === 0 ? "#4a4e69" : "#22223b"}
-            metalness={0.3}
-            roughness={0.5}
-          />
-        </mesh>
+      {forestData.map((tree, i) => (
+        <group key={i} position={tree.pos}>
+          {/* Trunk */}
+          <mesh position={[0, tree.height * 0.3, 0]} castShadow>
+            <cylinderGeometry args={[0.1, 0.15, tree.height * 0.6, 6]} />
+            <meshStandardMaterial color="#5d4037" roughness={1} />
+          </mesh>
+
+          {/* Foliage (3 Layers) */}
+          <mesh position={[0, tree.height * 0.75, 0]} castShadow>
+            <coneGeometry args={[0.8, tree.height * 0.7, 7]} />
+            <meshStandardMaterial color={tree.color} flatShading />
+          </mesh>
+          <mesh position={[0, tree.height * 1.0, 0]} castShadow>
+            <coneGeometry args={[0.6, tree.height * 0.5, 7]} />
+            <meshStandardMaterial color={tree.color} flatShading />
+          </mesh>
+          <mesh position={[0, tree.height * 1.2, 0]} castShadow>
+            <coneGeometry args={[0.4, tree.height * 0.4, 7]} />
+            <meshStandardMaterial color={tree.color} flatShading />
+          </mesh>
+        </group>
       ))}
     </group>
   );
 }
+
