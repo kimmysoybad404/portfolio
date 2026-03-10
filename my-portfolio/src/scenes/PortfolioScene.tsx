@@ -4,12 +4,10 @@ import { Html } from "@react-three/drei";
 import * as THREE from "three";
 import Car from "./Car";
 import Environment from "./Environment";
-import { IconType } from 'react-icons';
-import { SiFlutter, SiUnity, SiNodedotjs, SiTypescript, SiRoblox, SiFirebase, SiArduino, SiCsswizardry } from 'react-icons/si';
+import type { IconType } from 'react-icons';
+import { SiFlutter, SiUnity, SiNodedotjs, SiTypescript, SiRoblox, SiFirebase, SiArduino} from 'react-icons/si';
 import { FaUserShield } from 'react-icons/fa'; // A general security icon
 import { RiLineFill,RiMailFill,RiGithubFill } from 'react-icons/ri';
-import { TbBoxPadding } from "react-icons/tb";
-import { MdPadding } from "react-icons/md";
 
 export interface SkillConfig {
   name: string;

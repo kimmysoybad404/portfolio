@@ -1,5 +1,4 @@
 import { useRef } from "react";
-import { useFrame } from "@react-three/fiber";
 import { Sky, Stars, Cloud } from "@react-three/drei";
 import * as THREE from "three";
 
@@ -145,7 +144,7 @@ function BackgroundCity() {
 
   return (
     <group>
-      {buildings.map(([x, y, z, w, h], i) => (
+      {buildings.map(([x, z, w, h], i) => (
         <mesh key={i} position={[x, h / 2, z]} castShadow>
           <boxGeometry args={[w, h, w]} />
           <meshStandardMaterial

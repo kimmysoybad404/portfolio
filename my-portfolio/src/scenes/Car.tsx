@@ -1,6 +1,6 @@
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect } from "react";
 import { useFrame } from "@react-three/fiber";
-import { useGLTF, useAnimations } from "@react-three/drei";
+import { useGLTF } from "@react-three/drei";
 import * as THREE from "three";
 
 interface CarProps {
@@ -17,10 +17,11 @@ export default function Car({ onPositionChange, onNearTopic, topicZones = [] }: 
   const nearTopic = useRef<string | null>(null);
 
   // Try to load GLB, fallback to box car
-  let gltf: any = null;
+  let gltf: ReturnType<typeof useGLTF> | null = null;
   try {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     gltf = useGLTF("/Models/sedan-sports.glb");
-  } catch {}
+  } catch { /* empty */ }
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
