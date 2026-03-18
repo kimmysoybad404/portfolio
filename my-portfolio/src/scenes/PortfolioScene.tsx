@@ -1,318 +1,212 @@
-import { Suspense, useState, useCallback, type JSX } from "react";
-import { Canvas } from "@react-three/fiber";
-import { Html } from "@react-three/drei";
-import * as THREE from "three";
-import Car from "./Car";
-import Environment from "./Environment";
-import type { IconType } from 'react-icons';
-import { SiFlutter, SiUnity, SiNodedotjs, SiTypescript, SiRoblox, SiFirebase, SiArduino} from 'react-icons/si';
-import { FaUserShield } from 'react-icons/fa'; // A general security icon
-import { RiLineFill,RiMailFill,RiGithubFill } from 'react-icons/ri';
+// PortfolioScene.tsx — Solar System Portfolio
+// RULE: <Canvas> may only contain Three.js objects (mesh, group, lights, etc.)
+// RULE: HTML elements must NEVER appear inside <Canvas>
+// RULE: DOM overlays live OUTSIDE <Canvas> as siblings
 
-export interface SkillConfig {
-  name: string;
-  Icon: IconType; // This tells TypeScript it's a valid React Icon component
-}
+import { Suspense, useState, useRef, useMemo, type JSX } from 'react';
+import { Canvas, useFrame } from '@react-three/fiber';
+import { Stars, Billboard, Text } from '@react-three/drei';
+import * as THREE from 'three';
+import { RiLineFill, RiMailFill, RiGithubFill } from 'react-icons/ri';
+import { mySkills } from './skills';
 
-// eslint-disable-next-line react-refresh/only-export-components
-export const mySkills: SkillConfig[] = [
-  { name: "Flutter", Icon: SiFlutter },
-  { name: "Unity", Icon: SiUnity },
-  { name: "Node.js", Icon: SiNodedotjs },
-  { name: "TypeScript", Icon: SiTypescript },
-  { name: "Roblox Studio", Icon: SiRoblox },
-  { name: "Firebase", Icon: SiFirebase },
-  { name: "Arduino", Icon: SiArduino },
-  { name: "Cybersecurity", Icon: FaUserShield }, // General icon since no specific brand logo fits well
-];
-
-// ── Topic data ────────────────────────────────────────────────────────────────
-const TOPICS = [
-  { id: "about", label: "About Me", emoji: "👤", position: [-22, 0, -22] as [number, number, number], color: "#ff6b6b", accent: "#ff8e53", desc: "Learn about who I am" },
-  { id: "projects", label: "Projects", emoji: "🚀", position: [22, 0, -22] as [number, number, number], color: "#4ecdc4", accent: "#44cf6c", desc: "See what I've built" },
-  { id: "skills", label: "Skills", emoji: "⚡", position: [-22, 0, 22] as [number, number, number], color: "#a29bfe", accent: "#6c5ce7", desc: "Technologies I work with" },
-  { id: "contact", label: "Contact", emoji: "✉️", position: [22, 0, 22] as [number, number, number], color: "#ffd93d", accent: "#ff6b6b", desc: "Get in touch with me" },
-];
-
-const TOPIC_ZONES = TOPICS.map(t => ({ id: t.id, position: t.position, radius: 7 }));
-
-// ── TopicBuilding: lives INSIDE Canvas, so only 3D objects + <Html> ───────────
-function TopicBuilding({ t, near }: { t: typeof TOPICS[0]; near: boolean }) {
-  return (
-    <group position={t.position}>
-      {/* platform */}
-      <mesh position={[0, 0.1, 0]} receiveShadow>
-        <cylinderGeometry args={[5, 5.5, 0.2, 32]} />
-        <meshStandardMaterial color={t.color} metalness={0.4} roughness={0.5} transparent opacity={0.8} />
-      </mesh>
-
-      {/*
-        <Html> is the ONLY valid bridge from 3D space → DOM.
-        ✅ No style= prop on <Html> itself.
-        ✅ All style props go on the <div> inside.
-      */}
-      <Html position={[0, 5, 0]} center distanceFactor={18}>
-        <div style={{
-          pointerEvents: "none",
-          background: near ? `linear-gradient(135deg,${t.color}cc,${t.accent}cc)` : "rgba(10,10,26,0.82)",
-          border: `2px solid ${t.color}`,
-          borderRadius: 12,
-          padding: "8px 16px",
-          color: "#fff",
-          fontSize: 14,
-          fontFamily: "'Courier New',monospace",
-          fontWeight: 700,
-          letterSpacing: 2,
-          whiteSpace: "nowrap",
-          textAlign: "center",
-          backdropFilter: "blur(8px)",
-          boxShadow: near ? `0 0 20px ${t.color}88` : "none",
-          transform: `scale(${near ? 1.1 : 1})`,
-          transition: "all 0.3s ease",
-        }}>
-          <span style={{ marginRight: 6 }}>{t.emoji}</span>
-          {t.label}
-        </div>
-      </Html>
-
-      <pointLight position={[0, 6, 0]} color={t.color} intensity={near ? 8 : 2} distance={near ? 20 : 10} />
-    </group>
-  );
-}
-
-// ── CanvasFallback: invisible mesh used as Suspense fallback inside Canvas ─────
-// Must be a valid Three.js object — NOT a <div> or any HTML element
-// function CanvasFallback() {
-//   return (
-//     <mesh visible={false}>
-//       <boxGeometry args={[0,0,0]} />
-//       <meshBasicMaterial />
-//     </mesh>
-//   );
-// }
-
-// ══════════════════════════════════════════════════════════════════════════════
-// Everything below is PURE DOM — no R3F/drei hooks, no Canvas context
-// ══════════════════════════════════════════════════════════════════════════════
-
-function LoadingOverlay({ visible }: { visible: boolean }) {
-  if (!visible) return null;
-  // ✅ Pure DOM. Animations are defined in index.css (no <style> tag here)
-  return (
-    <div style={{ position: "fixed", inset: 0, background: "#0a0a1a", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", zIndex: 1000, fontFamily: "'Courier New',monospace", color: "#fff" }}>
-      <div style={{ fontSize: 52, marginBottom: 20, animation: "spin 2s linear infinite", display: "inline-block" }}>🚗</div>
-      <div style={{ fontSize: 20, fontWeight: 700, letterSpacing: 5, marginBottom: 28, color: "#4ecdc4" }}>LOADING WORLD</div>
-      <div style={{ width: 220, height: 4, background: "#1a1a2e", borderRadius: 4, overflow: "hidden", position: "relative" }}>
-        <div style={{ position: "absolute", top: 0, left: 0, height: "100%", width: 80, background: "linear-gradient(90deg,transparent,#4ecdc4,#a29bfe,transparent)", animation: "barSweep 1.2s ease-in-out infinite" }} />
-      </div>
-    </div>
-  );
-}
-
-// Modal content — plain React JSX, never touches Canvas
+// ── Modal content (pure DOM — never touches Canvas) ───────────────────────────
 const MODAL_CONTENT: Record<string, JSX.Element> = {
   about: (
     <div>
-      <h2 style={{ color: "#ff6b6b", margin: "0 0 12px" }}>👤 About Me</h2>
-      <p style={{ lineHeight: "1.6" }}>
-        I am <strong>Kitticheat Suttipipat</strong>, a Computer Engineering student
-        passionate about bridging the gap between interactive 3D environments and
-        robust backend systems.
-      </p>
-      <p style={{ color: "#aaa", fontSize: 13, marginTop: 12, lineHeight: "1.5" }}>
-        I specialize in <strong>Backend Development</strong> for mobile applications
-        and building immersive games using <strong>Unity</strong> and <strong>Roblox Studio</strong>.
-        I enjoy solving complex architectural challenges—from Smart Home AI integrations
-        to disaster-response SOS systems.
-      </p>
-
-      {/* --- The skills list with icons --- */}
-      <div style={{ marginTop: 20, display: "flex", gap: 8, flexWrap: "wrap" }}>
-        {mySkills.map(({ name, Icon }) => (
-          <span key={name} style={{
-            display: "flex",       // Required to align icon and text
-            alignItems: "center",  // Vertical center alignment
-            gap: 6,                 // Spacing between icon and text
-            background: "#ff6b6b22",
-            border: "1px solid #ff6b6b88",
-            borderRadius: 6,
-            padding: "6px 14px",   // Slightly increased padding
-            fontSize: 12,
-            color: "#ff6b6b",
-            fontWeight: 600
-          }}>
-            {/* Render the icon component with theme color and size */}
-            <Icon style={{ fontSize: "16px", color: "#ff6b6b" }} />
-            {name}
-          </span>
+      {/* ── Tabs ── */}
+      <div style={{ display: 'flex', gap: 6, marginBottom: 24, padding: 4, background: 'rgba(255,107,107,0.07)', borderRadius: 12, border: '1px solid #ff6b6b22' }}>
+        {['About Me', 'Education'].map((tab, i) => (
+          <button
+            key={tab}
+            id={`tab-btn-${i}`}
+            onClick={() => {
+              document.getElementById('tab-about')!.style.display = i === 0 ? 'block' : 'none';
+              document.getElementById('tab-edu')!.style.display   = i === 1 ? 'block' : 'none';
+              document.querySelectorAll('[id^="tab-btn-"]').forEach((el, j) => {
+                const btn = el as HTMLButtonElement;
+                btn.style.background = j === i ? '#ff6b6b' : 'transparent';
+                btn.style.color      = j === i ? '#ffffff' : '#ff6b6b66';
+                btn.style.boxShadow  = j === i ? '0 0 18px #ff6b6b55' : 'none';
+              });
+            }}
+            style={{
+              flex: 1,
+              background: i === 0 ? '#ff6b6b' : 'transparent',
+              border: 'none',
+              borderRadius: 9,
+              color: i === 0 ? '#ffffff' : '#ff6b6b66',
+              cursor: 'pointer',
+              fontFamily: "'Orbitron', monospace",
+              fontWeight: 700,
+              fontSize: 11,
+              letterSpacing: 2,
+              padding: '10px 0',
+              transition: 'all 0.2s',
+              boxShadow: i === 0 ? '0 0 18px #ff6b6b55' : 'none',
+            }}
+          >{tab.toUpperCase()}</button>
         ))}
+      </div>
+
+      {/* ── Tab: About ── */}
+      <div id="tab-about">
+        <h2 style={{ color: '#ff6b6b', margin: '0 0 12px' }}>👤 About Me</h2>
+        <p style={{ lineHeight: '1.6' }}>
+          I am <strong>Kitticheat Suttipipat</strong>, a Computer Engineering student
+          passionate about bridging the gap between interactive 3D environments and
+          robust backend systems.
+        </p>
+        <p style={{ color: '#aaa', fontSize: 13, marginTop: 12, lineHeight: '1.5' }}>
+          I specialise in <strong>Backend Development</strong> for mobile applications
+          and building immersive games using <strong>Unity</strong> and <strong>Roblox Studio</strong>.
+          I enjoy solving complex architectural challenges — from Smart Home AI integrations
+          to disaster-response SOS systems.
+        </p>
+        <div style={{ fontSize: 11, color: '#ff6b6b', letterSpacing: 2, fontWeight: 700, margin: '20px 0 10px' }}>TECH STACK</div>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          {mySkills.map(({ name, Icon }) => (
+            <span key={name} style={{
+              display: 'flex', alignItems: 'center', gap: 6,
+              background: '#ff6b6b22', border: '1px solid #ff6b6b88',
+              borderRadius: 6, padding: '6px 14px', fontSize: 12,
+              color: '#ff6b6b', fontWeight: 600,
+            }}>
+              <Icon style={{ fontSize: '16px', color: '#ff6b6b' }} />
+              {name}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      {/* ── Tab: Education (hidden by default) ── */}
+      <div id="tab-edu" style={{ display: 'none' }}>
+        <h2 style={{ color: '#ff6b6b', margin: '0 0 16px' }}>🎓 Education</h2>
+
+        {/* University */}
+        <div style={{ background: '#ff6b6b0e', border: '1px solid #ff6b6b33', borderRadius: 12, padding: '16px', marginBottom: 12 }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 8 }}>
+            <span style={{ fontSize: 28 }}>🎓</span>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontWeight: 700, color: '#ff6b6b', fontSize: 14 }}>Mae Fah Luang University</div>
+              <div style={{ fontSize: 10, color: '#ff6b6b99', letterSpacing: 2, marginTop: 2 }}>MFU · CHIANG RAI, THAILAND</div>
+            </div>
+            <span style={{ fontSize: 10, background: '#ffd93d18', border: '1px solid #ffd93d44', borderRadius: 20, padding: '4px 10px', color: '#ffd93d', whiteSpace: 'nowrap' }}>
+              Studying
+            </span>
+          </div>
+          <div style={{ height: '1px', background: '#ff6b6b22', margin: '10px 0' }} />
+          <div style={{ fontSize: 12, color: '#ccc', marginBottom: 6 }}>
+            <span style={{ color: '#ff6b6b88' }}>School of · </span>Applied Digital Technology (ADT)
+          </div>
+          <div style={{ fontSize: 12, color: '#ccc', marginBottom: 10 }}>
+            <span style={{ color: '#ff6b6b88' }}>Bachelor's Degree in · </span>Computer Engineering (CE)
+          </div>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <span style={{ fontSize: 11, background: '#ff6b6b18', border: '1px solid #ff6b6b33', borderRadius: 6, padding: '3px 10px', color: '#ff6b6b', fontFamily: 'monospace' }}>2566</span>
+            <span style={{ fontSize: 11, color: '#555', alignSelf: 'center' }}>→</span>
+            <span style={{ fontSize: 11, background: '#ff6b6b18', border: '1px solid #ff6b6b33', borderRadius: 6, padding: '3px 10px', color: '#ff6b6b', fontFamily: 'monospace' }}>now</span>
+          </div>
+        </div>
+
+        {/* High School */}
+        <div style={{ background: '#4ecdc40a', border: '1px solid #4ecdc422', borderRadius: 12, padding: '16px' }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 8 }}>
+            <span style={{ fontSize: 28 }}>🏫</span>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontWeight: 700, color: '#4ecdc4', fontSize: 14 }}>Visuttharangsi School</div>
+              <div style={{ fontSize: 10, color: '#4ecdc488', letterSpacing: 2, marginTop: 2 }}>VS</div>
+            </div>
+            <span style={{ fontSize: 10, background: '#4ecdc418', border: '1px solid #4ecdc444', borderRadius: 20, padding: '4px 10px', color: '#4ecdc4', whiteSpace: 'nowrap' }}>
+              Graduated
+            </span>
+          </div>
+          <div style={{ height: '1px', background: '#4ecdc422', margin: '10px 0' }} />
+          <div style={{ fontSize: 12, color: '#ccc', marginBottom: 10 }}>
+            <span style={{ color: '#4ecdc488' }}>study plan · </span>Science-Computers (Sci-Com)
+          </div>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <span style={{ fontSize: 11, background: '#4ecdc418', border: '1px solid #4ecdc433', borderRadius: 6, padding: '3px 10px', color: '#4ecdc4', fontFamily: 'monospace' }}>Graduated 2565</span>
+          </div>
+        </div>
       </div>
     </div>
   ),
+
   projects: (
     <div>
-      <h2 style={{ color: "#4ecdc4", margin: "0 0 12px" }}>🚀 Projects</h2>
+      <h2 style={{ color: '#4ecdc4', margin: '0 0 12px' }}>🚀 Projects</h2>
       {[
-        {
-          name: "SOS Disaster Chatbot",
-          desc: "A real-time emergency reporting system designed for disaster situations with database integration.",
-          tech: "Node.js · React · Database Design",
-          link: "https://github.com/kimmysoybad404/Soschatbotsystem",
-          type: "GitHub"
-        },
-        {
-          name: "Smart Home AI System",
-          desc: "Voice-command integrated AI for home automation, focusing on seamless backend connectivity.",
-          tech: "Python · Backend · IoT",
-          link: "https://github.com/KitticheatS", // Fallback to your profile
-          type: "GitHub"
-        },
-        {
-          name: "[Beta] Clean The World 🗑️♻️",
-          desc: "A stylized game focusing on environmental cleanup mechanics and economy systems.",
-          tech: "Lua · Roblox Studio",
-          link: "https://www.roblox.com/games/90224023204473/Clean-The-World",
-          type: "Roblox"
-        },
-        {
-          name: "Detect the Scammer for Brainrots",
-          desc: "An educational game designed to teach children how to identify and avoid online scammers.",
-          tech: "Lua · Roblox Studio",
-          link: "https://www.roblox.com/games/117904033620959/Detect-the-Scammer",
-          type: "Roblox"
-        }
+        { name: 'SOS Disaster Chatbot', desc: 'A real-time emergency reporting system designed for disaster situations with database integration.', tech: 'Node.js · React · Database Design', link: 'https://github.com/kimmysoybad404/Soschatbotsystem', type: 'GitHub' },
+        { name: 'Smart Home AI System', desc: 'Voice-command integrated AI for home automation, focusing on seamless backend connectivity.', tech: 'Python · Backend · IoT', link: 'https://github.com/KitticheatS', type: 'GitHub' },
+        { name: '[Beta] Clean The World 🗑️♻️', desc: 'A stylized game focusing on environmental cleanup mechanics and economy systems.', tech: 'Lua · Roblox Studio', link: 'https://www.roblox.com/games/90224023204473/Clean-The-World', type: 'Roblox' },
+        { name: 'Detect the Scammer for Brainrots', desc: 'An educational game designed to teach children how to identify and avoid online scammers.', tech: 'Lua · Roblox Studio', link: 'https://www.roblox.com/games/117904033620959/Detect-the-Scammer', type: 'Roblox' },
       ].map(p => (
-        <div key={p.name} style={{ background: "#4ecdc411", border: "1px solid #4ecdc433", borderRadius: 12, padding: "14px", marginBottom: 12, position: "relative" }}>
-          <div style={{ fontWeight: 700, color: "#4ecdc4", fontSize: 16 }}>{p.name}</div>
-          <div style={{ fontSize: 13, color: "#ccc", margin: "6px 0" }}>{p.desc}</div>
-          <div style={{ fontSize: 11, color: "#4ecdc4", opacity: 0.8, fontFamily: "monospace", marginBottom: 10 }}>{p.tech}</div>
-
-          <a
-            href={p.link}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              display: "inline-block",
-              fontSize: 11,
-              color: "#fff",
-              background: p.type === "Roblox" ? "#ff000033" : "#4ecdc433", // Red tint for Roblox, Cyan for GitHub
-              padding: "6px 12px",
-              borderRadius: 6,
-              textDecoration: "none",
-              border: `1px solid ${p.type === "Roblox" ? "#ff000066" : "#4ecdc466"}`,
-              transition: "all 0.2s ease",
-              fontWeight: 600
-            }}
-            onMouseOver={(e) => {
-              e.currentTarget.style.background = p.type === "Roblox" ? "#ff000066" : "#4ecdc466";
-            }}
-            onMouseOut={(e) => {
-              e.currentTarget.style.background = p.type === "Roblox" ? "#ff000033" : "#4ecdc433";
-            }}
-          >
-            View on {p.type} →
-          </a>
+        <div key={p.name} style={{ background: '#4ecdc411', border: '1px solid #4ecdc433', borderRadius: 12, padding: 14, marginBottom: 12 }}>
+          <div style={{ fontWeight: 700, color: '#4ecdc4', fontSize: 16 }}>{p.name}</div>
+          <div style={{ fontSize: 13, color: '#ccc', margin: '6px 0' }}>{p.desc}</div>
+          <div style={{ fontSize: 11, color: '#4ecdc4', opacity: 0.8, fontFamily: 'monospace', marginBottom: 10 }}>{p.tech}</div>
+          <a href={p.link} target="_blank" rel="noopener noreferrer" style={{
+            display: 'inline-block', fontSize: 11, color: '#fff',
+            background: p.type === 'Roblox' ? '#ff000033' : '#4ecdc433',
+            padding: '6px 12px', borderRadius: 6, textDecoration: 'none',
+            border: `1px solid ${p.type === 'Roblox' ? '#ff000066' : '#4ecdc466'}`,
+            fontWeight: 600,
+          }}>View on {p.type} →</a>
         </div>
       ))}
     </div>
   ),
+
   skills: (
     <div>
-      <h2 style={{ color: "#a29bfe", margin: "0 0 12px" }}>⚡ Skills & Stats</h2>
+      <h2 style={{ color: '#a29bfe', margin: '0 0 12px' }}>⚡ Skills & Stats</h2>
       {[
-        {
-          cat: "Frontend & Game Dev",
-          items: [
-            { name: "React", lv: 85 },
-            { name: "Three.js", lv: 70 },
-            { name: "Unity", lv: 10 },
-            { name: "Flutter", lv: 80 }
-          ]
-        },
-        {
-          cat: "Backend & Systems",
-          items: [
-            { name: "Node.js", lv: 90 },
-            { name: "Python", lv: 85 },
-            { name: "PostgreSQL", lv: 80 },
-            { name: "Arduino", lv: 90 }
-          ]
-        },
-        {
-          cat: "Tools",
-          items: [
-            { name: "Git", lv: 90 },
-            { name: "Docker", lv: 60 },
-            { name: "Figma", lv: 70 },
-            { name: "Roblox Studio", lv: 95 }
-          ]
-        }
+        { cat: 'Frontend & Game Dev', items: [{ name: 'React', lv: 85 }, { name: 'Three.js', lv: 70 }, { name: 'Unity', lv: 10 }, { name: 'Flutter', lv: 80 }] },
+        { cat: 'Backend & Systems',   items: [{ name: 'Node.js', lv: 90 }, { name: 'Python', lv: 85 }, { name: 'PostgreSQL', lv: 80 }, { name: 'Arduino', lv: 90 }] },
+        { cat: 'Tools',               items: [{ name: 'Git', lv: 90 }, { name: 'Docker', lv: 60 }, { name: 'Figma', lv: 70 }, { name: 'Roblox Studio', lv: 95 }] },
       ].map(g => (
         <div key={g.cat} style={{ marginBottom: 20 }}>
-          <div style={{ color: "#a29bfe", fontSize: 12, fontWeight: 700, marginBottom: 10, letterSpacing: 2 }}>
-            {g.cat.toUpperCase()}
-          </div>
-
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+          <div style={{ color: '#a29bfe', fontSize: 12, fontWeight: 700, marginBottom: 10, letterSpacing: 2 }}>{g.cat.toUpperCase()}</div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
             {g.items.map(s => (
-              <div key={s.name} style={{ marginBottom: 12 }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 11, marginBottom: 4 }}>
-                  <span style={{ color: "#fff", fontWeight: 500 }}>{s.name}</span>
-
-                  {/* --- LV PERCENTAGE COLOR --- */}
-                  <span style={{
-                    color: s.lv > 60 ? "#4ecdc4" : "#ff6b6b",           // Vibrant Cyan
-                    fontWeight: "900",
-                    fontFamily: "monospace",
-                    textShadow: "0 0 8px rgba(78, 205, 196, 0.5)" // Neon glow
-                  }}>
-                    {s.lv}%
-                  </span>
+              <div key={s.name}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, marginBottom: 4 }}>
+                  <span style={{ color: '#fff', fontWeight: 500 }}>{s.name}</span>
+                  <span style={{ color: s.lv > 60 ? '#4ecdc4' : '#ff6b6b', fontWeight: 900, fontFamily: 'monospace' }}>{s.lv}%</span>
                 </div>
-
-                {/* Progress Bar Container */}
-                <div style={{ width: "100%", height: "8px", background: "rgba(255, 255, 255, 0.05)", borderRadius: "4px", overflow: "hidden", border: "1px solid rgba(162, 155, 254, 0.2)" }}>
-
-                  {/* --- PROGRESS BAR COLOR --- */}
-                  <div style={{
-                    width: `${s.lv}%`,
-                    height: "100%",
-                    background: `linear-gradient(90deg, #6c5ce7, #a29bfe, #4ecdc4)`, // Multi-color shift
-                    borderRadius: "4px",
-                    boxShadow: "0 0 15px rgba(162, 155, 254, 0.6)",
-                    transition: "width 1s ease-out" // Makes it feel like it's loading
-                  }} />
+                <div style={{ width: '100%', height: 8, background: 'rgba(255,255,255,0.05)', borderRadius: 4, overflow: 'hidden', border: '1px solid rgba(162,155,254,0.2)' }}>
+                  <div style={{ width: `${s.lv}%`, height: '100%', background: 'linear-gradient(90deg,#6c5ce7,#a29bfe,#4ecdc4)', borderRadius: 4 }} />
                 </div>
               </div>
             ))}
           </div>
         </div>
       ))}
-
-      {/* Optional: Extra Engineering Stats */}
-      <div style={{ marginTop: 20, padding: "12px", background: "rgba(162, 155, 254, 0.05)", borderRadius: "10px", border: "1px dashed #a29bfe44" }}>
-        <div style={{ fontSize: 10, color: "#a29bfe", marginBottom: 8 }}>SYSTEM ARCHITECTURE STATUS</div>
-        <div style={{ fontSize: 12, color: "#fff", fontFamily: "monospace" }}>
+      <div style={{ marginTop: 20, padding: 12, background: 'rgba(162,155,254,0.05)', borderRadius: 10, border: '1px dashed #a29bfe44' }}>
+        <div style={{ fontSize: 10, color: '#a29bfe', marginBottom: 8 }}>SYSTEM ARCHITECTURE STATUS</div>
+        <div style={{ fontSize: 12, color: '#fff', fontFamily: 'monospace' }}>
           {'>'} Languages: Thai (Native), English (Fluent)<br />
-          {'>'} Specialization: Backend & Frontend Systems<br />
+          {'>'} Specialization: Backend & Frontend Systems
         </div>
       </div>
     </div>
   ),
+
   contact: (
     <div>
-      <h2 style={{ color: "#ffd93d", margin: "0 0 12px" }}>✉️ Contact</h2>
-      <p style={{ color: "#ccc", fontSize: 14, marginBottom: 16 }}>Let's build something amazing together.</p>
-      {[{ icon: <RiMailFill style={{ color: "#ea4335", fontSize: "24px" }} />, label: "Email", value: "kimmysoybad@gmail.com" },
-      { icon: <RiGithubFill style={{ color: "#fff", fontSize: "24px" }} />, label: "GitHub", value: "github.com/kimmysoybad404" },
-      {icon: <RiLineFill style={{ color: "#06C755", fontSize: "30px" }} />, label: "Line", value: "kimmykimmy01" },
-      
+      <h2 style={{ color: '#ffd93d', margin: '0 0 12px' }}>✉️ Contact</h2>
+      <p style={{ color: '#ccc', fontSize: 14, marginBottom: 16 }}>Let's build something amazing together.</p>
+      {[
+        { icon: <RiMailFill style={{ color: '#ea4335', fontSize: 24 }} />,  label: 'Email',  value: 'kimmysoybad@gmail.com' },
+        { icon: <RiGithubFill style={{ color: '#fff', fontSize: 24 }} />,   label: 'GitHub', value: 'github.com/kimmysoybad404' },
+        { icon: <RiLineFill style={{ color: '#06C755', fontSize: 30 }} />,  label: 'Line',   value: 'kimmykimmy01' },
       ].map(c => (
-        <div key={c.label} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 0", borderBottom: "1px solid #ffffff11" }}>
-          <span style={{ fontSize: 20 }}>{c.icon}</span>
+        <div key={c.label} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0', borderBottom: '1px solid #ffffff11' }}>
+          <span>{c.icon}</span>
           <div>
-            <div style={{ fontSize: 11, color: "#888", letterSpacing: 1 }}>{c.label.toUpperCase()}</div>
-            <div style={{ color: "#ffd93d", fontSize: 13 }}>{c.value}</div>
+            <div style={{ fontSize: 11, color: '#888', letterSpacing: 1 }}>{c.label.toUpperCase()}</div>
+            <div style={{ color: '#ffd93d', fontSize: 13 }}>{c.value}</div>
           </div>
         </div>
       ))}
@@ -320,100 +214,242 @@ const MODAL_CONTENT: Record<string, JSX.Element> = {
   ),
 };
 
-function HUD({ nearId, onOpen }: { nearId: string | null; onOpen: (id: string) => void }) {
-  const t = TOPICS.find(x => x.id === nearId) ?? null;
-  // ✅ No <style> tag. Animations reference keyframes defined in index.css
+// ── Emoji sprite texture ─────────────────────────────────────────────────────
+function makeEmojiTexture(emoji: string): THREE.CanvasTexture {
+  const size = 256;
+  const c = document.createElement('canvas');
+  c.width = size; c.height = size;
+  const ctx = c.getContext('2d')!;
+  ctx.font = `${Math.floor(size * 0.7)}px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(emoji, size / 2, size / 2 + 8);
+  const tex = new THREE.CanvasTexture(c);
+  tex.needsUpdate = true;
+  return tex;
+}
+
+// ── EmojiSprite: always faces camera ─────────────────────────────────────────
+function EmojiSprite({ emoji, size }: { emoji: string; size: number }) {
+  const texture = useMemo(() => makeEmojiTexture(emoji), [emoji]);
+  const s = size * 1.6;
+  return (
+    // position at center — sprite always faces camera, sits on top via depthTest=false
+    <sprite position={[0, 0, size * 0.9]} scale={[s, s, s]}>
+      <spriteMaterial map={texture} transparent depthTest={false} sizeAttenuation />
+    </sprite>
+  );
+
+}
+
+// ── Planet data ───────────────────────────────────────────────────────────────
+const PLANETS = [
+  { id: 'about',    label: 'ABOUT ME', emoji: '👤', orbitRadius: 7,  speed: 0.3,  size: 0.6,  color: '#ff6b6b', emissive: '#cc2222', startAngle: 0.5 },
+  { id: 'projects', label: 'PROJECTS', emoji: '🚀', orbitRadius: 12, speed: 0.18, size: 0.75, color: '#4ecdc4', emissive: '#1a7a60', startAngle: 2.1 },
+  { id: 'skills',   label: 'SKILLS',   emoji: '⚡', orbitRadius: 17, speed: 0.12, size: 0.65, color: '#a29bfe', emissive: '#5540cc', startAngle: 4.2 },
+  { id: 'contact',  label: 'CONTACT',  emoji: '📱', orbitRadius: 22, speed: 0.08, size: 0.55, color: '#ffd93d', emissive: '#cc9900', startAngle: 1.0 },
+];
+type PlanetData = typeof PLANETS[0];
+
+// ── Sun ───────────────────────────────────────────────────────────────────────
+function Sun() {
+  const meshRef = useRef<THREE.Mesh>(null);
+  const glowRef = useRef<THREE.Mesh>(null);
+
+  useFrame(({ clock }) => {
+    const t = clock.elapsedTime;
+    if (meshRef.current) {
+      meshRef.current.rotation.y = t * 0.1;
+      meshRef.current.scale.setScalar(1 + Math.sin(t * 1.5) * 0.03);
+    }
+    if (glowRef.current) {
+      glowRef.current.scale.setScalar(1 + Math.sin(t * 1.2 + 1) * 0.05);
+    }
+  });
+
+  return (
+    <group>
+      <mesh ref={glowRef}>
+        <sphereGeometry args={[2.4, 32, 32]} />
+        <meshStandardMaterial color="#ff9020" emissive="#ff6000" emissiveIntensity={0.4} transparent opacity={0.15} />
+      </mesh>
+      <mesh ref={meshRef}>
+        <sphereGeometry args={[1.8, 32, 32]} />
+        <meshStandardMaterial color="#ffe080" emissive="#ff8800" emissiveIntensity={1.2} roughness={0.4} metalness={0.1} />
+      </mesh>
+      <pointLight color="#fff5c0" intensity={80} distance={80} decay={2} />
+      <Billboard position={[0, 3.5, 0]}>
+        <Text font="/fonts/Orbitron-Bold.ttf"fontSize={0.58} color="#ffffff" anchorX="center" anchorY="middle" letterSpacing={0.12}>
+          KITTICHEAT SUTTIPIPAT
+        </Text>
+        <Text font="/fonts/Orbitron-Bold.ttf" position={[0, -0.7, 0]} fontSize={0.38} color="#aaaaaa" anchorX="center" anchorY="middle" letterSpacing={0.2}>
+          FULLSTACK DEVELOPER
+        </Text>
+      </Billboard>
+    </group>
+  );
+}
+
+// ── Orbit ring ────────────────────────────────────────────────────────────────
+function OrbitRing({ radius }: { radius: number }) {
+  const line = useMemo(() => {
+    const points: THREE.Vector3[] = [];
+    for (let i = 0; i <= 128; i++) {
+      const a = (i / 128) * Math.PI * 2;
+      points.push(new THREE.Vector3(Math.cos(a) * radius, 0, Math.sin(a) * radius));
+    }
+    const geom = new THREE.BufferGeometry().setFromPoints(points);
+    const mat  = new THREE.LineBasicMaterial({ color: '#ffffff', transparent: true, opacity: 0.08 });
+    return new THREE.Line(geom, mat);
+  }, [radius]);
+
+  return <primitive object={line} />;
+}
+
+// ── Planet ────────────────────────────────────────────────────────────────────
+function Planet({ planet, onSelect }: { planet: PlanetData; onSelect: (p: PlanetData) => void }) {
+  const groupRef  = useRef<THREE.Group>(null);
+  const meshRef   = useRef<THREE.Mesh>(null);
+  const [hovered, setHovered] = useState(false);
+
+
+
+  useFrame(({ clock }) => {
+    const t = clock.elapsedTime;
+    const angle = planet.startAngle + t * planet.speed;
+    if (groupRef.current) {
+      groupRef.current.position.x = Math.cos(angle) * planet.orbitRadius;
+      groupRef.current.position.z = Math.sin(angle) * planet.orbitRadius;
+    }
+    if (meshRef.current) {
+      meshRef.current.rotation.y = t * 0.4;
+      meshRef.current.scale.setScalar(
+        hovered ? 1.12 + Math.sin(t * 3) * 0.05 : 1 + Math.sin(t * 2 + planet.startAngle) * 0.04
+      );
+    }
+  });
+
+  return (
+    <group ref={groupRef}>
+      {/* Glow halo */}
+      <mesh>
+        <sphereGeometry args={[planet.size * 1.8, 16, 16]} />
+        <meshStandardMaterial color={planet.color} emissive={planet.color} emissiveIntensity={hovered ? 0.6 : 0.2} transparent opacity={hovered ? 0.18 : 0.08} />
+      </mesh>
+      {/* Planet with emoji texture */}
+      <mesh
+        ref={meshRef}
+        castShadow
+        onPointerOver={() => { setHovered(true);  document.body.style.cursor = 'pointer'; }}
+        onPointerOut={() =>  { setHovered(false); document.body.style.cursor = 'default'; }}
+        onClick={() => onSelect(planet)}
+      >
+        <sphereGeometry args={[planet.size, 64, 64]} />
+        <meshStandardMaterial
+          color={planet.color}
+          emissive={planet.emissive}
+          emissiveIntensity={hovered ? 0.6 : 0.25}
+          roughness={0.6}
+          metalness={0.1}
+        />
+      </mesh>
+      <EmojiSprite emoji={planet.emoji} size={planet.size} />
+      <pointLight color={planet.color} intensity={hovered ? 4 : 1.5} distance={6} decay={2} />
+      <Billboard position={[0, planet.size + 0.7, 0]}>
+        <Text  font="/fonts/Orbitron-Bold.ttf" fontSize={0.28} color={hovered ? '#ffffff' : planet.color} anchorX="center" anchorY="middle" letterSpacing={0.08}>
+          {planet.label}
+        </Text>
+      </Billboard>
+    </group>
+  );
+}
+
+// ── Scene (Canvas-only) ───────────────────────────────────────────────────────
+function Scene({ onSelect }: { onSelect: (p: PlanetData) => void }) {
+  useFrame((state) => {
+    const t = state.clock.elapsedTime * 0.04;
+    state.camera.position.x = Math.sin(t) * 32;
+    state.camera.position.z = Math.cos(t) * 32;
+    state.camera.position.y = 14;
+    state.camera.lookAt(0, 0, 0);
+  });
+
   return (
     <>
-      {/* Controls bar */}
-      <div style={{ position: "fixed", bottom: 24, left: "50%", transform: "translateX(-50%)", display: "flex", gap: 8, zIndex: 10, fontFamily: "'Courier New',monospace" }}>
-        {["W ↑", "A ←", "S ↓", "D →"].map(k => (
-          <div key={k} style={{ background: "rgba(10,10,26,0.75)", border: "1px solid #ffffff33", borderRadius: 8, padding: "6px 12px", color: "#888", fontSize: 12, backdropFilter: "blur(8px)" }}>{k}</div>
-        ))}
-        <div style={{ background: "rgba(10,10,26,0.75)", border: "1px solid #ffffff22", borderRadius: 8, padding: "6px 12px", color: "#555", fontSize: 12, marginLeft: 4 }}>DRIVE TO EXPLORE</div>
-      </div>
-
-      {/* Topic side card */}
-      {t && (
-        <div style={{ position: "fixed", top: "50%", right: 32, transform: "translateY(-50%)", zIndex: 20, animation: "fadeSlide 0.35s ease" }}>
-          <div style={{ background: "rgba(8,8,20,0.95)", border: `2px solid ${t.color}`, borderRadius: 16, padding: "20px 24px", color: "#fff", fontFamily: "'Courier New',monospace", minWidth: 220, backdropFilter: "blur(16px)", boxShadow: `0 0 40px ${t.color}44` }}>
-            <div style={{ fontSize: 28, marginBottom: 8 }}>{t.emoji}</div>
-            <div style={{ fontWeight: 700, fontSize: 16, color: t.color, marginBottom: 4 }}>{t.label}</div>
-            <div style={{ fontSize: 12, color: "#888", marginBottom: 16 }}>{t.desc}</div>
-            <button
-              onClick={() => onOpen(t.id)}
-              style={{ background: `linear-gradient(135deg,${t.color},${t.accent})`, border: "none", borderRadius: 8, padding: "10px 20px", color: "#fff", fontFamily: "'Courier New',monospace", fontWeight: 700, fontSize: 12, letterSpacing: 2, cursor: "pointer", width: "100%" }}
-            >ENTER →</button>
-          </div>
-        </div>
-      )}
-
-      {/* Legend */}
-      <div style={{ position: "fixed", top: 24, right: 24, zIndex: 10, display: "flex", flexDirection: "column", gap: 6, fontFamily: "'Courier New',monospace" }}>
-        {TOPICS.map(x => (
-          <div key={x.id} style={{ display: "flex", alignItems: "center", gap: 8, padding: "5px 10px", background: nearId === x.id ? `${x.color}22` : "rgba(10,10,26,0.6)", border: `1px solid ${nearId === x.id ? x.color : "#ffffff15"}`, borderRadius: 8, backdropFilter: "blur(8px)", transition: "all 0.3s" }}>
-            <span style={{ fontSize: 13 }}>{x.emoji}</span>
-            <span style={{ fontSize: 11, color: nearId === x.id ? x.color : "#555", letterSpacing: 1 }}>{x.label.toUpperCase()}</span>
-          </div>
-        ))}
-      </div>
+      <ambientLight intensity={0.15} color="#b0c8ff" />
+      <Stars radius={120} depth={60} count={5000} factor={3} fade speed={0.5} />
+      <Sun />
+      {PLANETS.map(p => <OrbitRing key={`orbit-${p.id}`} radius={p.orbitRadius} />)}
+      {PLANETS.map(p => <Planet key={p.id} planet={p} onSelect={onSelect} />)}
     </>
   );
 }
 
-function InfoModal({ topicId, onClose }: { topicId: string; onClose: () => void }) {
-  const t = TOPICS.find(x => x.id === topicId);
-  if (!t) return null;
+// ── DOM: Modal ────────────────────────────────────────────────────────────────
+function InfoModal({ planet, onClose }: { planet: PlanetData; onClose: () => void }) {
+  const color = planet.color;
   return (
-    <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.75)", zIndex: 100, display: "flex", alignItems: "center", justifyContent: "center", backdropFilter: "blur(6px)", animation: "fadeIn 0.2s ease" }} onClick={onClose}>
-      <div style={{ background: "rgba(8,8,20,0.97)", border: `2px solid ${t.color}`, borderRadius: 20, padding: 32, maxWidth: 480, width: "90vw", maxHeight: "50vh", overflowY: "auto", fontFamily: "'Courier New',monospace", color: "#fff", boxShadow: `0 0 60px ${t.color}55`, animation: "slideUp 0.3s ease", position: "relative" }} onClick={e => e.stopPropagation()}>
-        <button onClick={onClose} style={{ position: "absolute", top: 16, right: 16, background: "transparent", border: `1px solid ${t.color}66`, borderRadius: 8, color: "#888", cursor: "pointer", padding: "4px 10px", fontFamily: "'Courier New',monospace", fontSize: 12 }}>✕ CLOSE</button>
-        {MODAL_CONTENT[topicId]}
+    <div
+      onClick={onClose}
+      style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(6px)', animation: 'fadeIn 0.2s ease' }}
+    >
+      <div
+        onClick={e => e.stopPropagation()}
+        style={{ background: 'rgba(6,8,20,0.97)', border: `2px solid ${color}55`, borderRadius: 20, padding: 32, maxWidth: 480, width: '90vw', maxHeight: '75vh', overflowY: 'auto', fontFamily: "'Orbitron', monospace", color: '#fff', boxShadow: `0 0 60px ${color}33`, animation: 'slideUp 0.3s ease', position: 'relative' }}
+      >
+        <button
+          onClick={onClose}
+          style={{ position: 'absolute', top: 16, right: 16, background: 'transparent', border: `1px solid ${color}44`, borderRadius: 8, color: '#888', cursor: 'pointer', padding: '4px 10px', fontFamily: "'Orbitron', monospace", fontSize: 12 }}
+        >✕ CLOSE</button>
+        {MODAL_CONTENT[planet.id]}
       </div>
+    </div>
+  );
+}
+
+// ── DOM: Legend ───────────────────────────────────────────────────────────────
+function Legend({ active }: { active: string | null }) {
+  return (
+    <div style={{ position: 'fixed', top: 24, right: 24, zIndex: 10, display: 'flex', flexDirection: 'column', gap: 6, fontFamily: "'Orbitron', monospace" }}>
+      {PLANETS.map(p => (
+        <div key={p.id} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '5px 12px', background: active === p.id ? `${p.color}18` : 'rgba(6,8,20,0.7)', border: `1px solid ${active === p.id ? p.color : '#ffffff15'}`, borderRadius: 8, backdropFilter: 'blur(8px)', transition: 'all 0.3s' }}>
+          <div style={{ width: 8, height: 8, borderRadius: '50%', background: p.color, boxShadow: `0 0 6px ${p.color}` }} />
+          <span style={{ fontSize: 11, color: active === p.id ? p.color : '#555', letterSpacing: 1 }}>{p.label.toUpperCase()}</span>
+        </div>
+      ))}
     </div>
   );
 }
 
 // ── Root ──────────────────────────────────────────────────────────────────────
 export default function PortfolioScene() {
-  const [nearId, setNearId] = useState<string | null>(null);
-  const [modalId, setModalId] = useState<string | null>(null);
-  const [loaded, setLoaded] = useState(false);
-
-  const handleCreated = useCallback(() => {
-    setTimeout(() => setLoaded(true), 500);
-  }, []);
+  const [selected, setSelected] = useState<PlanetData | null>(null);
 
   return (
-    <div style={{ width: "100vw", height: "100vh", background: "#0a0a1a", position: "relative" }}>
+    <div style={{ width: '100vw', height: '100vh', background: '#03050f', position: 'relative' }}>
 
-      {/* 1. DOM Overlays (UI) */}
-      <LoadingOverlay visible={!loaded} />
-
-      <div style={{ position: "fixed", top: 24, left: 28, zIndex: 10, fontFamily: "'Courier New',monospace", background: "black", pointerEvents: "none",borderRadius: 10,padding: 20 }}>
-        <div style={{ fontSize: 40, letterSpacing: 4, color: "#4ecdc4", marginBottom: 2 }}>▶ MY PORTFOLIO</div>
-        <div style={{ fontSize: 20, fontWeight: 700, letterSpacing: 2 }}>Explore my experience</div>
+      {/* Title */}
+      <div style={{ position: 'fixed', top: 24, left: 28, zIndex: 10, fontFamily: "'Orbitron', monospace", color: '#fff', pointerEvents: 'none' }}>
+        <div style={{ fontSize: 11, letterSpacing: 4, color: '#4ecdc4', marginBottom: 2 }}>▶ MY PORTFOLIO</div>
+        <div style={{ fontSize: 22, fontWeight: 700, letterSpacing: 2 }}>Explore my experience</div>
       </div>
 
-      <HUD nearId={nearId} onOpen={setModalId} />
-      {modalId && <InfoModal topicId={modalId} onClose={() => setModalId(null)} />}
+      {/* Hint */}
+      <div style={{ position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)', zIndex: 10, fontFamily: "'Orbitron', monospace", fontSize: 12, color: 'rgba(255,255,255,0.25)', pointerEvents: 'none', letterSpacing: 2 }}>
+        CLICK A PLANET TO EXPLORE
+      </div>
 
-      {/* 2. The 3D Scene */}
+      <Legend active={selected?.id ?? null} />
+      {selected && <InfoModal planet={selected} onClose={() => setSelected(null)} />}
+
+      {/* Canvas — 3D only */}
       <Canvas
-        shadows
-        camera={{ position: [0, 6, 14], fov: 60 }}
-        gl={{ antialias: true, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.1 }}
-        onCreated={handleCreated}
-        style={{ position: "absolute", inset: 0 }}
+        camera={{ position: [32, 14, 32], fov: 50 }}
+        gl={{ antialias: true, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.0 }}
+        style={{ position: 'absolute', inset: 0 }}
       >
         <Suspense fallback={null}>
-          <Environment />
-          {TOPICS.map(t => (
-            <TopicBuilding key={t.id} t={t} near={nearId === t.id} />
-          ))}
-          <Car topicZones={TOPIC_ZONES} onNearTopic={setNearId} />
-
-
+          <Scene onSelect={setSelected} />
         </Suspense>
       </Canvas>
     </div>

@@ -1,8 +1,5 @@
-// ✅ CORRECT
 import PortfolioScene from './scenes/PortfolioScene';
 
-function App() {
+export default function App() {
   return <PortfolioScene />;
 }
-
-export default App;
