@@ -267,8 +267,16 @@ ul.slist li::before{
 
 @media print{
   @page{size:A4; margin:0}
+  *{-webkit-print-color-adjust:exact !important; print-color-adjust:exact !important}
+  :root{
+    --page:#E6EAF2; --sheet:#FFFFFF; --panel:#101728; --panel-2:#18203449;
+    --line:#D5DCE9; --line-dark:#2A3448;
+    --text:#0B111E; --text-2:#4A5570; --text-3:#7C87A2;
+    --on-dark:#E9EDF6; --on-dark-2:#9BA7C1; --on-dark-3:#6C7896;
+    --accent:#1B3E94; --accent-2:#3E6BD8; --accent-ink:#FFFFFF;
+  }
   body{background:#fff}
-  .stage{padding:0; height:auto; display:block}
+  .stage{padding:0; height:auto; overflow:visible; display:block}
   .sheet{position:static; transform:none !important; box-shadow:none; width:210mm; height:297mm}
   .tt,.pdf-btn{display:none}
 }
@@ -494,6 +502,8 @@ ul.slist li::before{
 (function(){
   var root=document.documentElement, tt=document.getElementById('tt'), sheet=document.getElementById('sheet'), pdfBtn=document.getElementById('pdfBtn');
   pdfBtn.addEventListener('click', function(){ window.print(); });
+  window.addEventListener('beforeprint', function(){ sheet.style.transform='none'; });
+  window.addEventListener('afterprint', function(){ fit(); });
   var stored=null;
   try{stored=localStorage.getItem('ks-theme');}catch(e){}
   if(stored==='dark'||stored==='light') root.setAttribute('data-theme',stored);
