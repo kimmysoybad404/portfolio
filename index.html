@@ -122,6 +122,17 @@ a{color:inherit; text-decoration:none}
 }
 
 .langs{display:flex; flex-wrap:wrap; gap:6px}
+.lang-list{display:flex; flex-direction:column; gap:8px}
+.lang-row{display:flex; align-items:center; justify-content:space-between; gap:8px}
+.lang-row .name{font-size:12px; color:var(--on-dark)}
+.lang-row .level{
+  font-family:"IBM Plex Mono",monospace; font-size:9px; letter-spacing:.08em; text-transform:uppercase;
+  padding:3px 9px; border-radius:99px; border:1px solid var(--line-dark); color:var(--accent-2); flex:none;
+}
+.lang-row .level-beginner{color:#D9A066; border-color:#D9A06655}
+.lang-row .level-intermediate{color:#AFC9EC; border-color:#AFC9EC55}
+.lang-row .level-advanced{color:#4ADE80; border-color:#4ADE8055}
+.lang-row .level-expert{color:#FBBF24; border-color:#FBBF2455}
 .lpill{
   font-size:10.5px; padding:3px 9px; border-radius:99px;
   border:1px solid var(--line-dark); color:var(--on-dark-2);
@@ -152,8 +163,8 @@ a{color:inherit; text-decoration:none}
 }
 
 /* ---------- main ---------- */
-.main{padding:22px 30px 18px; display:flex; flex-direction:column; gap:22px; min-height:0}
-.m-block{display:flex; flex-direction:column; gap:7px}
+.main{padding:22px 30px 12px; display:flex; flex-direction:column; gap:11px; min-height:0}
+.m-block{display:flex; flex-direction:column; gap:5px}
 .m-head{display:flex; align-items:baseline; gap:10px; margin-bottom:2px}
 .m-head h2{font-size:15px; font-weight:700; letter-spacing:-.01em; color:var(--text)}
 .m-head .rule{flex:1; height:1px; background:var(--line)}
@@ -172,6 +183,13 @@ a{color:inherit; text-decoration:none}
 .feat-top{display:flex; align-items:baseline; justify-content:space-between; gap:12px; flex-wrap:wrap}
 .feat-name{font-family:Archivo,sans-serif; font-weight:900; font-size:19px; letter-spacing:-.02em; color:var(--accent)}
 .feat-host{font-family:"IBM Plex Mono",monospace; font-size:10px; color:var(--text-3)}
+.exp-meta{font-size:10.5px; color:var(--text-3); margin-top:2px; margin-bottom:2px}
+ul.exp-list{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:4px}
+ul.exp-list li{position:relative; padding-left:14px; font-size:11.5px; line-height:1.55; color:var(--text-2)}
+ul.exp-list li::before{content:""; position:absolute; left:0; top:.65em; width:7px; height:1px; background:var(--accent)}
+.exp-stack{font-size:10.5px; color:var(--text-3); margin-top:2px; white-space:normal}
+.exp-entry{display:flex; flex-direction:column; gap:4px}
+.exp-entry + .exp-entry{margin-top:6px; padding-top:6px; border-top:1px solid var(--line)}
 .caps{display:grid; grid-template-columns:1fr 1fr; gap:6px 16px; margin-top:2px}
 .cap{display:flex; gap:8px; align-items:flex-start}
 .cap svg{width:13px; height:13px; color:var(--accent); flex:none; margin-top:2px}
@@ -186,8 +204,9 @@ a{color:inherit; text-decoration:none}
 .tag.on{border-color:var(--accent); color:var(--accent)}
 
 /* stack */
-.sgrid{display:flex; flex-direction:column; gap:8px}
+.sgrid{display:flex; flex-direction:column; gap:5px}
 .srow{display:grid; grid-template-columns:96px 1fr; gap:12px; align-items:baseline}
+.v-text{font-size:10.5px; color:var(--text-2)}
 .srow .k{
   font-family:"IBM Plex Mono",monospace; font-size:9px; letter-spacing:.13em;
   text-transform:uppercase; color:var(--text-3); padding-top:2px;
@@ -213,7 +232,7 @@ ul.slist li::before{
 
 .m-foot{
   margin-top:auto; display:flex; justify-content:space-between; align-items:center;
-  gap:12px; padding-top:12px; border-top:1px solid var(--line);
+  gap:12px; padding-top:8px; border-top:1px solid var(--line);
   font-family:"IBM Plex Mono",monospace; font-size:9px; letter-spacing:.08em;
   text-transform:uppercase; color:var(--text-3);
 }
@@ -340,29 +359,24 @@ ul.slist li::before{
         <div class="edu">
           <strong>Mae Fah Luang University</strong>
           <div class="deg">B.Eng. Computer Engineering</div>
-          <div class="yr">2021 — 2025</div>
+          <div class="yr">2021 — 2027</div>
         </div>
       </div>
 
       <div class="a-block">
         <h3>Languages</h3>
-        <div class="langs">
-          <span class="lpill">English</span>
-          <span class="lpill">Thai</span>
+        <div class="lang-list">
+          <div class="lang-row"><span class="name">Thai</span><span class="level level-intermediate">Native</span></div>
+          <div class="lang-row"><span class="name">English</span><span class="level level-beginner">Fluent</span></div>
         </div>
       </div>
 
       <div class="a-block">
         <h3>Proficiency</h3>
-        <div class="meters">
-          <div class="m-row">
-            <div class="m-top"><span class="l">Backend</span><span class="v">95%</span></div>
-            <div class="m-track"><div class="m-fill" style="width:95%"></div></div>
-          </div>
-          <div class="m-row">
-            <div class="m-top"><span class="l">Frontend</span><span class="v">90%</span></div>
-            <div class="m-track"><div class="m-fill" style="width:90%"></div></div>
-          </div>
+        <div class="lang-list">
+          <div class="lang-row"><span class="name">Full-Stack Development</span><span class="level level-beginner">Beginner</span></div>
+          <div class="lang-row"><span class="name">AI-Assisted Development</span><span class="level level-intermediate">Intermediate</span></div>
+          <div class="lang-row"><span class="name">Project Management</span><span class="level level-intermediate">Intermediate</span></div>
         </div>
       </div>
 
@@ -379,15 +393,14 @@ ul.slist li::before{
 
       <div class="a-block">
         <h3>Soft skills</h3>
-        <ul class="slist">
-          <li>Works inside other people's codebases</li>
-          <li>Chases root causes, not symptoms</li>
-          <li>Documents for the next person</li>
-          <li>Picks up unfamiliar tech alone</li>
-          <li>Takes feedback without defending code</li>
-          <li>Finishes work unsupervised</li>
-          <li>Communicates in Thai and English</li>
-        </ul>
+        <div class="langs">
+          <span class="lpill">Adaptability</span>
+          <span class="lpill">Problem-Solving</span>
+          <span class="lpill">Self-Directed Learning</span>
+          <span class="lpill">Openness to Feedback</span>
+          <span class="lpill">Ownership</span>
+          <span class="lpill">Communication</span>
+        </div>
       </div>
 
       <div class="a-foot">Updated Aug 2026</div>
@@ -397,65 +410,63 @@ ul.slist li::before{
     <main class="main">
 
       <section class="m-block">
-        <div class="m-head"><h2>About</h2><span class="rule"></span></div>
+        <div class="m-head"><h2>Objective</h2><span class="rule"></span></div>
         <div class="about-copy">
           <p class="lead">
-            Computer Engineering graduate from Mae Fah Luang University. Most of my time goes into
-            <strong>MFU SOS</strong>, the university's emergency incident platform.
-          </p>
-          <p>
-            Someone in trouble opens it; someone on duty has to act on what they see. That
-            constraint decides every technical call in the system.
-          </p>
-          <p>
-            My teammate was pulled onto other work early on, so I built most of it myself. He later
-            restructured the codebase, and rebuilding my features onto his architecture taught me
-            more about system design than the first version did.
+            Computer Engineering student at Mae Fah Luang University with hands-on full-stack
+            experience building <strong>MFU SOS</strong>, the university's emergency incident platform.
+            Comfortable owning a system end-to-end — backend logic, AI integration, and everything
+            between — and learning fast inside unfamiliar codebases. Looking to bring that same
+            ownership and self-directed learning into a full-stack internship or entry-level developer role.
           </p>
         </div>
       </section>
 
       <section class="m-block">
-        <div class="m-head"><h2>Featured project</h2><span class="rule"></span></div>
-        <div class="feat-top">
-          <span class="feat-name">MFU SOS</span>
-          <span class="feat-host">sos-ai.mfu.ac.th · private repository</span>
+        <div class="m-head"><h2>Relevant Experience</h2><span class="rule"></span></div>
+
+        <div class="exp-entry">
+          <div class="feat-top">
+            <span class="feat-name">MFU SOS</span>
+            <span class="feat-host">05/2026 – Present</span>
+          </div>
+          <div class="exp-meta">Developer (Commissioned Senior Project) · Mae Fah Luang University · Chiang Rai, Thailand</div>
+          <ul class="exp-list">
+            <li>Built a trilingual RAG chatbot — bge-m3 embeddings in Qdrant, answered by gemma3 in Thai, English, or Chinese</li>
+            <li>Deployed seven self-hosted AI roles to classify urgency, read incident photos, and summarise reports for on-duty staff</li>
+            <li>Built a live incident map with three-tier urgency markers pushed to staff over SSE</li>
+            <li>Designed an IAM &amp; permission matrix enforcing five roles server-side across the platform</li>
+            <li>Containerised delivery with Docker Compose (local &amp; prod) and GitLab CI to a Harbor registry, Nginx in front</li>
+          </ul>
+          <div class="exp-stack">Node.js · Express · MongoDB · Vue 2 · Ollama · Qdrant · RAG · Leaflet · SSE · Docker · GitLab CI · Nginx</div>
         </div>
-        <p>
-          Emergency reporting for Mae Fah Luang University, rebuilt from the ground up. Report by chat,
-          by form, or with a single photo; staff triage it on a live map. Self-hosted models throughout.
-        </p>
-        <div class="caps">
-          <div class="cap">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5h16v11H12l-5 4v-4H4Z"/></svg>
-            <span><b>Trilingual chatbot with RAG</b><span>bge-m3 embeddings in Qdrant, answered by gemma3 in Thai, English or Chinese</span></span>
+
+        <div class="exp-entry">
+          <div class="feat-top">
+            <span class="feat-name">tft-predictor</span>
+            <span class="feat-host">04/2026 – Present</span>
           </div>
-          <div class="cap">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="7" width="10" height="10" rx="2"/><path d="M10 3.5v3M14 3.5v3M10 17.5v3M14 17.5v3M3.5 10h3M3.5 14h3M17.5 10h3M17.5 14h3"/></svg>
-            <span><b>Seven self-hosted AI roles</b><span>Classify urgency, read the photo, ask follow-ups, translate, summarise for the officer</span></span>
-          </div>
-          <div class="cap">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4 3.5 6v14L9 18l6 2 5.5-2V4L15 6Z"/><path d="M9 4v14M15 6v14"/></svg>
-            <span><b>Live incident map</b><span>Leaflet over satellite tiles, three-tier urgency markers pushed over SSE</span></span>
-          </div>
-          <div class="cap">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5h3l1.5-2.5h8l1.5 2.5h3v10h-17Z"/><circle cx="12" cy="13" r="3.2"/></svg>
-            <span><b>One-photo emergency report</b><span>Camera opens, GPS required; vision model writes the description, no typing</span></span>
-          </div>
-          <div class="cap">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.8 20 6v6.2c0 4.4-3.3 7.6-8 9-4.7-1.4-8-4.6-8-9V6Z"/><path d="m9 12 2.2 2.2L15.5 10"/></svg>
-            <span><b>IAM &amp; permission matrix</b><span>Delegated auth on the university platform, B2B scopes, five roles enforced server-side</span></span>
-          </div>
-          <div class="cap">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="4" height="4"/><rect x="9" y="11" width="4" height="4"/><rect x="14" y="11" width="4" height="4"/><rect x="9" y="6.5" width="4" height="4"/><path d="M3 16.5c3.5 3.5 13.5 3.5 18-3"/></svg>
-            <span><b>Containerised delivery</b><span>Docker Compose local and prod, GitLab CI to a Harbor registry, Nginx in front</span></span>
-          </div>
+          <div class="exp-meta">Independent Developer · Personal Project</div>
+          <ul class="exp-list">
+            <li>Built an automated ingestion pipeline pulling live match data from the Riot Games API across multiple regions every 30 minutes into MongoDB</li>
+            <li>Trained an XGBoost / scikit-learn model to predict top-4 win probability and assign an S–D tier to any team composition</li>
+            <li>Served predictions through a FastAPI backend with a Next.js + TypeScript + Tailwind frontend, all containerised with Docker</li>
+          </ul>
+          <div class="exp-stack">Python · FastAPI · MongoDB · XGBoost · scikit-learn · Next.js · TypeScript · Tailwind · Docker</div>
         </div>
-        <div class="tags">
-          <span class="tag on"><svg class="lg sm" style="--bc:#5FA04E" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M11.998,24c-0.321,0-0.641-0.084-0.922-0.247l-2.936-1.737c-0.438-0.245-0.224-0.332-0.08-0.383 c0.585-0.203,0.703-0.25,1.328-0.604c0.065-0.037,0.151-0.023,0.218,0.017l2.256,1.339c0.082,0.045,0.197,0.045,0.272,0l8.795-5.076 c0.082-0.047,0.134-0.141,0.134-0.238V6.921c0-0.099-0.053-0.192-0.137-0.242l-8.791-5.072c-0.081-0.047-0.189-0.047-0.271,0 L3.075,6.68C2.99,6.729,2.936,6.825,2.936,6.921v10.15c0,0.097,0.054,0.189,0.139,0.235l2.409,1.392 c1.307,0.654,2.108-0.116,2.108-0.89V7.787c0-0.142,0.114-0.253,0.256-0.253h1.115c0.139,0,0.255,0.112,0.255,0.253v10.021 c0,1.745-0.95,2.745-2.604,2.745c-0.508,0-0.909,0-2.026-0.551L2.28,18.675c-0.57-0.329-0.922-0.945-0.922-1.604V6.921 c0-0.659,0.353-1.275,0.922-1.603l8.795-5.082c0.557-0.315,1.296-0.315,1.848,0l8.794,5.082c0.57,0.329,0.924,0.944,0.924,1.603 v10.15c0,0.659-0.354,1.273-0.924,1.604l-8.794,5.078C12.643,23.916,12.324,24,11.998,24z M19.099,13.993 c0-1.9-1.284-2.406-3.987-2.763c-2.731-0.361-3.009-0.548-3.009-1.187c0-0.528,0.235-1.233,2.258-1.233 c1.807,0,2.473,0.389,2.747,1.607c0.024,0.115,0.129,0.199,0.247,0.199h1.141c0.071,0,0.138-0.031,0.186-0.081 c0.048-0.054,0.074-0.123,0.067-0.196c-0.177-2.098-1.571-3.076-4.388-3.076c-2.508,0-4.004,1.058-4.004,2.833 c0,1.925,1.488,2.457,3.895,2.695c2.88,0.282,3.103,0.703,3.103,1.269c0,0.983-0.789,1.402-2.642,1.402 c-2.327,0-2.839-0.584-3.011-1.742c-0.02-0.124-0.126-0.215-0.253-0.215h-1.137c-0.141,0-0.254,0.112-0.254,0.253 c0,1.482,0.806,3.248,4.655,3.248C17.501,17.007,19.099,15.91,19.099,13.993z"/></svg>Node.js</span><span class="tag on"><svg class="lg sm mono" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.262 16.666h1.146l6.975-9.325H19.22zm9.778 1.441v.004l-4.334-5.706-.557.74 4.873 6.682H.945V4.173h9.505l5.026 6.7.574-.772-4.374-5.928h.003l-.719-.945H0v17.544h24zM10.917 8.705a3.8 3.8 0 0 0-1.292-1.183q-.796-.45-1.916-.45c-.746 0-1.37.14-1.906.424a3.76 3.76 0 0 0-1.31 1.12 4.9 4.9 0 0 0-.75 1.581 7.17 7.17 0 0 0 0 3.696c.148.567.402 1.101.75 1.573a3.5 3.5 0 0 0 1.31 1.066q.803.39 1.906.389 1.77 0 2.739-.868.966-.867 1.328-2.457h-1.139q-.271 1.084-.977 1.734-.704.651-1.952.65-.812 0-1.392-.342a3.1 3.1 0 0 1-.957-.869 3.5 3.5 0 0 1-.551-1.182 5 5 0 0 1-.17-1.133 9 9 0 0 0-.015-.286 4.5 4.5 0 0 1 .015-.829c.047-.418.147-.83.296-1.223A3.7 3.7 0 0 1 5.54 9.05a2.9 2.9 0 0 1 .922-.742q.541-.28 1.246-.28c.47 0 .869.093 1.23.28q.541.281.922.742.379.461.587 1.057t.225 1.246H5.625l.004.957h6.182a7.3 7.3 0 0 0-.18-1.924 4.9 4.9 0 0 0-.715-1.68z"/></svg>Express</span><span class="tag on"><svg class="lg sm" style="--bc:#47A248" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.193 9.555c-1.264-5.58-4.252-7.414-4.573-8.115-.28-.394-.53-.954-.735-1.44-.036.495-.055.685-.523 1.184-.723.566-4.438 3.682-4.74 10.02-.282 5.912 4.27 9.435 4.888 9.884l.07.05A73.49 73.49 0 0111.91 24h.481c.114-1.032.284-2.056.51-3.07.417-.296.604-.463.85-.693a11.342 11.342 0 003.639-8.464c.01-.814-.103-1.662-.197-2.218zm-5.336 8.195s0-8.291.275-8.29c.213 0 .49 10.695.49 10.695-.381-.045-.765-1.76-.765-2.405z"/></svg>MongoDB</span>
-          <span class="tag on"><svg class="lg sm" style="--bc:#4FC08D" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M24,1.61H14.06L12,5.16,9.94,1.61H0L12,22.39ZM12,14.08,5.16,2.23H9.59L12,6.41l2.41-4.18h4.43Z"/></svg>Vue 2</span><span class="tag on"><svg class="lg sm mono" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.361 10.26a.894.894 0 0 0-.558.47l-.072.148.001.207c0 .193.004.217.059.353.076.193.152.312.291.448.24.238.51.3.872.205a.86.86 0 0 0 .517-.436.752.752 0 0 0 .08-.498c-.064-.453-.33-.782-.724-.897a1.06 1.06 0 0 0-.466 0zm-9.203.005c-.305.096-.533.32-.65.639a1.187 1.187 0 0 0-.06.52c.057.309.31.59.598.667.362.095.632.033.872-.205.14-.136.215-.255.291-.448.055-.136.059-.16.059-.353l.001-.207-.072-.148a.894.894 0 0 0-.565-.472 1.02 1.02 0 0 0-.474.007Zm4.184 2c-.131.071-.223.25-.195.383.031.143.157.288.353.407.105.063.112.072.117.136.004.038-.01.146-.029.243-.02.094-.036.194-.036.222.002.074.07.195.143.253.064.052.076.054.255.059.164.005.198.001.264-.03.169-.082.212-.234.15-.525-.052-.243-.042-.28.087-.355.137-.08.281-.219.324-.314a.365.365 0 0 0-.175-.48.394.394 0 0 0-.181-.033c-.126 0-.207.03-.355.124l-.085.053-.053-.032c-.219-.13-.259-.145-.391-.143a.396.396 0 0 0-.193.032zm.39-2.195c-.373.036-.475.05-.654.086-.291.06-.68.195-.951.328-.94.46-1.589 1.226-1.787 2.114-.04.176-.045.234-.045.53 0 .294.005.357.043.524.264 1.16 1.332 2.017 2.714 2.173.3.033 1.596.033 1.896 0 1.11-.125 2.064-.727 2.493-1.571.114-.226.169-.372.22-.602.039-.167.044-.23.044-.523 0-.297-.005-.355-.045-.531-.288-1.29-1.539-2.304-3.072-2.497a6.873 6.873 0 0 0-.855-.031zm.645.937a3.283 3.283 0 0 1 1.44.514c.223.148.537.458.671.662.166.251.26.508.303.82.02.143.01.251-.043.482-.08.345-.332.705-.672.957a3.115 3.115 0 0 1-.689.348c-.382.122-.632.144-1.525.138-.582-.006-.686-.01-.853-.042-.57-.107-1.022-.334-1.35-.68-.264-.28-.385-.535-.45-.946-.03-.192.025-.509.137-.776.136-.326.488-.73.836-.963.403-.269.934-.46 1.422-.512.187-.02.586-.02.773-.002zm-5.503-11a1.653 1.653 0 0 0-.683.298C5.617.74 5.173 1.666 4.985 2.819c-.07.436-.119 1.04-.119 1.503 0 .544.064 1.24.155 1.721.02.107.031.202.023.208a8.12 8.12 0 0 1-.187.152 5.324 5.324 0 0 0-.949 1.02 5.49 5.49 0 0 0-.94 2.339 6.625 6.625 0 0 0-.023 1.357c.091.78.325 1.438.727 2.04l.13.195-.037.064c-.269.452-.498 1.105-.605 1.732-.084.496-.095.629-.095 1.294 0 .67.009.803.088 1.266.095.555.288 1.143.503 1.534.071.128.243.393.264.407.007.003-.014.067-.046.141a7.405 7.405 0 0 0-.548 1.873c-.062.417-.071.552-.071.991 0 .56.031.832.148 1.279L3.42 24h1.478l-.05-.091c-.297-.552-.325-1.575-.068-2.597.117-.472.25-.819.498-1.296l.148-.29v-.177c0-.165-.003-.184-.057-.293a.915.915 0 0 0-.194-.25 1.74 1.74 0 0 1-.385-.543c-.424-.92-.506-2.286-.208-3.451.124-.486.329-.918.544-1.154a.787.787 0 0 0 .223-.531c0-.195-.07-.355-.224-.522a3.136 3.136 0 0 1-.817-1.729c-.14-.96.114-2.005.69-2.834.563-.814 1.353-1.336 2.237-1.475.199-.033.57-.028.776.01.226.04.367.028.512-.041.179-.085.268-.19.374-.431.093-.215.165-.333.36-.576.234-.29.46-.489.822-.729.413-.27.884-.467 1.352-.561.17-.035.25-.04.569-.04.319 0 .398.005.569.04a4.07 4.07 0 0 1 1.914.997c.117.109.398.457.488.602.034.057.095.177.132.267.105.241.195.346.374.43.14.068.286.082.503.045.343-.058.607-.053.943.016 1.144.23 2.14 1.173 2.581 2.437.385 1.108.276 2.267-.296 3.153-.097.15-.193.27-.333.419-.301.322-.301.722-.001 1.053.493.539.801 1.866.708 3.036-.062.772-.26 1.463-.533 1.854a2.096 2.096 0 0 1-.224.258.916.916 0 0 0-.194.25c-.054.109-.057.128-.057.293v.178l.148.29c.248.476.38.823.498 1.295.253 1.008.231 2.01-.059 2.581a.845.845 0 0 0-.044.098c0 .006.329.009.732.009h.73l.02-.074.036-.134c.019-.076.057-.3.088-.516.029-.217.029-1.016 0-1.258-.11-.875-.295-1.57-.597-2.226-.032-.074-.053-.138-.046-.141.008-.005.057-.074.108-.152.376-.569.607-1.284.724-2.228.031-.26.031-1.378 0-1.628-.083-.645-.182-1.082-.348-1.525a6.083 6.083 0 0 0-.329-.7l-.038-.064.131-.194c.402-.604.636-1.262.727-2.04a6.625 6.625 0 0 0-.024-1.358 5.512 5.512 0 0 0-.939-2.339 5.325 5.325 0 0 0-.95-1.02 8.097 8.097 0 0 1-.186-.152.692.692 0 0 1 .023-.208c.208-1.087.201-2.443-.017-3.503-.19-.924-.535-1.658-.98-2.082-.354-.338-.716-.482-1.15-.455-.996.059-1.8 1.205-2.116 3.01a6.805 6.805 0 0 0-.097.726c0 .036-.007.066-.015.066a.96.96 0 0 1-.149-.078A4.857 4.857 0 0 0 12 3.03c-.832 0-1.687.243-2.456.698a.958.958 0 0 1-.148.078c-.008 0-.015-.03-.015-.066a6.71 6.71 0 0 0-.097-.725C8.997 1.392 8.337.319 7.46.048a2.096 2.096 0 0 0-.585-.041Zm.293 1.402c.248.197.523.759.682 1.388.03.113.06.244.069.292.007.047.026.152.041.233.067.365.098.76.102 1.24l.002.475-.12.175-.118.178h-.278c-.324 0-.646.041-.954.124l-.238.06c-.033.007-.038-.003-.057-.144a8.438 8.438 0 0 1 .016-2.323c.124-.788.413-1.501.696-1.711.067-.05.079-.049.157.013zm9.825-.012c.17.126.358.46.498.888.28.854.36 2.028.212 3.145-.019.14-.024.151-.057.144l-.238-.06a3.693 3.693 0 0 0-.954-.124h-.278l-.119-.178-.119-.175.002-.474c.004-.669.066-1.19.214-1.772.157-.623.434-1.185.68-1.382.078-.062.09-.063.159-.012z"/></svg>Ollama</span><span class="tag on"><svg class="lg sm" style="--bc:#DC244C" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 16.5 3.897-2.25v-4.5L12 7.5 8.103 9.75v4.5zM1.607 18 12 24l3.897-2.25v-4.5L12 19.5l-6.495-3.75v-7.5L12 4.5l6.495 3.75v15L22.393 21V6L12 0 1.607 6Z"/></svg>Qdrant</span>
-          <span class="tag on">RAG</span><span class="tag on"><svg class="lg sm" style="--bc:#199900" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.69 0c-.355.574-8.432 4.74-10.856 8.649-2.424 3.91-3.116 6.988-2.237 9.882.879 2.893 2.559 2.763 3.516 3.717.958.954 2.257 2.113 4.332 1.645 2.717-.613 5.335-2.426 6.638-7.508 1.302-5.082.448-9.533-.103-11.99A35.395 35.395 0 0 0 17.69 0zm-.138.858l-9.22 21.585-.574-.577Z"/></svg>Leaflet</span><span class="tag on">SSE</span>
-          <span class="tag on"><svg class="lg sm" style="--bc:#2496ED" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13.983 11.078h2.119a.186.186 0 00.186-.185V9.006a.186.186 0 00-.186-.186h-2.119a.185.185 0 00-.185.185v1.888c0 .102.083.185.185.185m-2.954-5.43h2.118a.186.186 0 00.186-.186V3.574a.186.186 0 00-.186-.185h-2.118a.185.185 0 00-.185.185v1.888c0 .102.082.185.185.185m0 2.716h2.118a.187.187 0 00.186-.186V6.29a.186.186 0 00-.186-.185h-2.118a.185.185 0 00-.185.185v1.887c0 .102.082.185.185.186m-2.93 0h2.12a.186.186 0 00.184-.186V6.29a.185.185 0 00-.185-.185H8.1a.185.185 0 00-.185.185v1.887c0 .102.083.185.185.186m-2.964 0h2.119a.186.186 0 00.185-.186V6.29a.185.185 0 00-.185-.185H5.136a.186.186 0 00-.186.185v1.887c0 .102.084.185.186.186m5.893 2.715h2.118a.186.186 0 00.186-.185V9.006a.186.186 0 00-.186-.186h-2.118a.185.185 0 00-.185.185v1.888c0 .102.082.185.185.185m-2.93 0h2.12a.185.185 0 00.184-.185V9.006a.185.185 0 00-.184-.186h-2.12a.185.185 0 00-.184.185v1.888c0 .102.083.185.185.185m-2.964 0h2.119a.185.185 0 00.185-.185V9.006a.185.185 0 00-.184-.186h-2.12a.186.186 0 00-.186.186v1.887c0 .102.084.185.186.185m-2.92 0h2.12a.185.185 0 00.184-.185V9.006a.185.185 0 00-.184-.186h-2.12a.185.185 0 00-.184.185v1.888c0 .102.082.185.185.185M23.763 9.89c-.065-.051-.672-.51-1.954-.51-.338.001-.676.03-1.01.087-.248-1.7-1.653-2.53-1.716-2.566l-.344-.199-.226.327c-.284.438-.49.922-.612 1.43-.23.97-.09 1.882.403 2.661-.595.332-1.55.413-1.744.42H.751a.751.751 0 00-.75.748 11.376 11.376 0 00.692 4.062c.545 1.428 1.355 2.48 2.41 3.124 1.18.723 3.1 1.137 5.275 1.137.983.003 1.963-.086 2.93-.266a12.248 12.248 0 003.823-1.389c.98-.567 1.86-1.288 2.61-2.136 1.252-1.418 1.998-2.997 2.553-4.4h.221c1.372 0 2.215-.549 2.68-1.009.309-.293.55-.65.707-1.046l.098-.288Z"/></svg>Docker</span><span class="tag on"><svg class="lg sm" style="--bc:#FC6D26" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m23.6004 9.5927-.0337-.0862L20.3.9814a.851.851 0 0 0-.3362-.405.8748.8748 0 0 0-.9997.0539.8748.8748 0 0 0-.29.4399l-2.2055 6.748H7.5375l-2.2057-6.748a.8573.8573 0 0 0-.29-.4412.8748.8748 0 0 0-.9997-.0537.8585.8585 0 0 0-.3362.4049L.4332 9.5015l-.0325.0862a6.0657 6.0657 0 0 0 2.0119 7.0105l.0113.0087.03.0213 4.976 3.7264 2.462 1.8633 1.4995 1.1321a1.0085 1.0085 0 0 0 1.2197 0l1.4995-1.1321 2.4619-1.8633 5.006-3.7489.0125-.01a6.0682 6.0682 0 0 0 2.0094-7.003z"/></svg>GitLab CI</span><span class="tag on"><svg class="lg sm" style="--bc:#009639" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0L1.605 6v12L12 24l10.395-6V6L12 0zm6 16.59c0 .705-.646 1.29-1.529 1.29-.631 0-1.351-.255-1.801-.81l-6-7.141v6.66c0 .721-.57 1.29-1.274 1.29H7.32c-.721 0-1.29-.6-1.29-1.29V7.41c0-.705.63-1.29 1.5-1.29.646 0 1.38.255 1.83.81l5.97 7.141V7.41c0-.721.6-1.29 1.29-1.29h.075c.72 0 1.29.6 1.29 1.29v9.18H18z"/></svg>Nginx</span>
+
+        <div class="exp-entry">
+          <div class="feat-top">
+            <span class="feat-name">Borrow Asset Project</span>
+            <span class="feat-host">10/2025 – 11/2025</span>
+          </div>
+          <div class="exp-meta">Project Manager &amp; Flutter Developer · Student Team Project, Mae Fah Luang University</div>
+          <ul class="exp-list">
+            <li>Led the project as Project Manager while building the Flutter client, coordinating scope and timeline for a two-month build</li>
+            <li>Built a cross-platform Flutter app (iOS, Android, Web, Windows/macOS/Linux) with role-based flows for borrowers, lenders, and staff — ~180 commits</li>
+            <li>Built the Node.js/Express backend (JWT auth, bcrypt/argon2 hashing, MySQL) with request, approval, and return workflows plus staff-side asset management tools</li>
+          </ul>
+          <div class="exp-stack">Flutter · Dart · Node.js · Express · MySQL · JWT</div>
         </div>
       </section>
 
@@ -464,29 +475,20 @@ ul.slist li::before{
         <div class="sgrid">
           <div class="srow">
             <span class="k">Languages</span>
-            <span class="v"><span class="chip"><svg class="lg" style="--bc:#F7DF1E" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M0 0h24v24H0V0zm22.034 18.276c-.175-1.095-.888-2.015-3.003-2.873-.736-.345-1.554-.585-1.797-1.14-.091-.33-.105-.51-.046-.705.15-.646.915-.84 1.515-.66.39.12.75.42.976.9 1.034-.676 1.034-.676 1.755-1.125-.27-.42-.404-.601-.586-.78-.63-.705-1.469-1.065-2.834-1.034l-.705.089c-.676.165-1.32.525-1.71 1.005-1.14 1.291-.811 3.541.569 4.471 1.365 1.02 3.361 1.244 3.616 2.205.24 1.17-.87 1.545-1.966 1.41-.811-.18-1.26-.586-1.755-1.336l-1.83 1.051c.21.48.45.689.81 1.109 1.74 1.756 6.09 1.666 6.871-1.004.029-.09.24-.705.074-1.65l.046.067zm-8.983-7.245h-2.248c0 1.938-.009 3.864-.009 5.805 0 1.232.063 2.363-.138 2.711-.33.689-1.18.601-1.566.48-.396-.196-.597-.466-.83-.855-.063-.105-.11-.196-.127-.196l-1.825 1.125c.305.63.75 1.172 1.324 1.517.855.51 2.004.675 3.207.405.783-.226 1.458-.691 1.811-1.411.51-.93.402-2.07.397-3.346.012-2.054 0-4.109 0-6.179l.004-.056z"/></svg>JavaScript</span><span class="chip">C#</span><span class="chip"><svg class="lg" style="--bc:#0175C2" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4.105 4.105S9.158 1.58 11.684.316a3.079 3.079 0 0 1 1.481-.315c.766.047 1.677.788 1.677.788L24 9.948v9.789h-4.263V24H9.789l-9-9C.303 14.5 0 13.795 0 13.105c0-.319.18-.818.316-1.105l3.789-7.895zm.679.679v11.787c.002.543.021 1.024.498 1.508L10.204 23h8.533v-4.263L4.784 4.784zm12.055-.678c-.899-.896-1.809-1.78-2.74-2.643-.302-.267-.567-.468-1.07-.462-.37.014-.87.195-.87.195L6.341 4.105l10.498.001z"/></svg>Dart</span><span class="chip">SQL</span></span>
+            <span class="v-text">JavaScript · C# · Dart · SQL</span>
           </div>
           <div class="srow">
             <span class="k">Build</span>
-            <span class="v"><span class="chip"><svg class="lg" style="--bc:#5FA04E" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M11.998,24c-0.321,0-0.641-0.084-0.922-0.247l-2.936-1.737c-0.438-0.245-0.224-0.332-0.08-0.383 c0.585-0.203,0.703-0.25,1.328-0.604c0.065-0.037,0.151-0.023,0.218,0.017l2.256,1.339c0.082,0.045,0.197,0.045,0.272,0l8.795-5.076 c0.082-0.047,0.134-0.141,0.134-0.238V6.921c0-0.099-0.053-0.192-0.137-0.242l-8.791-5.072c-0.081-0.047-0.189-0.047-0.271,0 L3.075,6.68C2.99,6.729,2.936,6.825,2.936,6.921v10.15c0,0.097,0.054,0.189,0.139,0.235l2.409,1.392 c1.307,0.654,2.108-0.116,2.108-0.89V7.787c0-0.142,0.114-0.253,0.256-0.253h1.115c0.139,0,0.255,0.112,0.255,0.253v10.021 c0,1.745-0.95,2.745-2.604,2.745c-0.508,0-0.909,0-2.026-0.551L2.28,18.675c-0.57-0.329-0.922-0.945-0.922-1.604V6.921 c0-0.659,0.353-1.275,0.922-1.603l8.795-5.082c0.557-0.315,1.296-0.315,1.848,0l8.794,5.082c0.57,0.329,0.924,0.944,0.924,1.603 v10.15c0,0.659-0.354,1.273-0.924,1.604l-8.794,5.078C12.643,23.916,12.324,24,11.998,24z M19.099,13.993 c0-1.9-1.284-2.406-3.987-2.763c-2.731-0.361-3.009-0.548-3.009-1.187c0-0.528,0.235-1.233,2.258-1.233 c1.807,0,2.473,0.389,2.747,1.607c0.024,0.115,0.129,0.199,0.247,0.199h1.141c0.071,0,0.138-0.031,0.186-0.081 c0.048-0.054,0.074-0.123,0.067-0.196c-0.177-2.098-1.571-3.076-4.388-3.076c-2.508,0-4.004,1.058-4.004,2.833 c0,1.925,1.488,2.457,3.895,2.695c2.88,0.282,3.103,0.703,3.103,1.269c0,0.983-0.789,1.402-2.642,1.402 c-2.327,0-2.839-0.584-3.011-1.742c-0.02-0.124-0.126-0.215-0.253-0.215h-1.137c-0.141,0-0.254,0.112-0.254,0.253 c0,1.482,0.806,3.248,4.655,3.248C17.501,17.007,19.099,15.91,19.099,13.993z"/></svg>Node.js</span><span class="chip"><svg class="lg mono" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.262 16.666h1.146l6.975-9.325H19.22zm9.778 1.441v.004l-4.334-5.706-.557.74 4.873 6.682H.945V4.173h9.505l5.026 6.7.574-.772-4.374-5.928h.003l-.719-.945H0v17.544h24zM10.917 8.705a3.8 3.8 0 0 0-1.292-1.183q-.796-.45-1.916-.45c-.746 0-1.37.14-1.906.424a3.76 3.76 0 0 0-1.31 1.12 4.9 4.9 0 0 0-.75 1.581 7.17 7.17 0 0 0 0 3.696c.148.567.402 1.101.75 1.573a3.5 3.5 0 0 0 1.31 1.066q.803.39 1.906.389 1.77 0 2.739-.868.966-.867 1.328-2.457h-1.139q-.271 1.084-.977 1.734-.704.651-1.952.65-.812 0-1.392-.342a3.1 3.1 0 0 1-.957-.869 3.5 3.5 0 0 1-.551-1.182 5 5 0 0 1-.17-1.133 9 9 0 0 0-.015-.286 4.5 4.5 0 0 1 .015-.829c.047-.418.147-.83.296-1.223A3.7 3.7 0 0 1 5.54 9.05a2.9 2.9 0 0 1 .922-.742q.541-.28 1.246-.28c.47 0 .869.093 1.23.28q.541.281.922.742.379.461.587 1.057t.225 1.246H5.625l.004.957h6.182a7.3 7.3 0 0 0-.18-1.924 4.9 4.9 0 0 0-.715-1.68z"/></svg>Express</span><span class="chip"><svg class="lg" style="--bc:#4FC08D" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M24,1.61H14.06L12,5.16,9.94,1.61H0L12,22.39ZM12,14.08,5.16,2.23H9.59L12,6.41l2.41-4.18h4.43Z"/></svg>Vue 2</span><span class="chip"><svg class="lg" style="--bc:#02569B" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M14.314 0L2.3 12 6 15.7 21.684.013h-7.357zm.014 11.072L7.857 17.53l6.47 6.47H21.7l-6.46-6.468 6.46-6.46h-7.37z"/></svg>Flutter</span><span class="chip"><svg class="lg mono" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12.9288 4.2939 3.7997 2.1929c.1366.077.1415.2905 0 .3675l-4.515 2.6076a.4192.4192 0 0 1-.4246 0L7.274 6.8543c-.139-.0745-.1415-.293 0-.3675l3.7972-2.193V0L1.3758 5.5977V16.793l3.7177-2.1456v-4.3858c-.0025-.1565.1813-.2682.318-.1838l4.5148 2.6076a.4252.4252 0 0 1 .2136.3676v5.2127c.0025.1565-.1813.2682-.3179.1838l-3.7996-2.1929-3.7178 2.1457L12 24l9.6954-5.5977-3.7178-2.1457-3.7996 2.1929c-.1341.082-.3229-.0248-.3179-.1838V13.053c0-.1565.087-.2956.2136-.3676l4.5149-2.6076c.134-.082.3228.0224.3179.1838v4.3858l3.7177 2.1456V5.5977L12.9288 0Z"/></svg>Unity</span><span class="chip">REST &amp; SSE</span></span>
+            <span class="v-text">Node.js · Express · Vue 2 · Flutter · Unity · REST &amp; SSE</span>
           </div>
           <div class="srow">
             <span class="k">Data &amp; AI</span>
-            <span class="v"><span class="chip"><svg class="lg" style="--bc:#47A248" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.193 9.555c-1.264-5.58-4.252-7.414-4.573-8.115-.28-.394-.53-.954-.735-1.44-.036.495-.055.685-.523 1.184-.723.566-4.438 3.682-4.74 10.02-.282 5.912 4.27 9.435 4.888 9.884l.07.05A73.49 73.49 0 0111.91 24h.481c.114-1.032.284-2.056.51-3.07.417-.296.604-.463.85-.693a11.342 11.342 0 003.639-8.464c.01-.814-.103-1.662-.197-2.218zm-5.336 8.195s0-8.291.275-8.29c.213 0 .49 10.695.49 10.695-.381-.045-.765-1.76-.765-2.405z"/></svg>MongoDB</span><span class="chip"><svg class="lg" style="--bc:#DC244C" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 16.5 3.897-2.25v-4.5L12 7.5 8.103 9.75v4.5zM1.607 18 12 24l3.897-2.25v-4.5L12 19.5l-6.495-3.75v-7.5L12 4.5l6.495 3.75v15L22.393 21V6L12 0 1.607 6Z"/></svg>Qdrant</span><span class="chip"><svg class="lg mono" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.361 10.26a.894.894 0 0 0-.558.47l-.072.148.001.207c0 .193.004.217.059.353.076.193.152.312.291.448.24.238.51.3.872.205a.86.86 0 0 0 .517-.436.752.752 0 0 0 .08-.498c-.064-.453-.33-.782-.724-.897a1.06 1.06 0 0 0-.466 0zm-9.203.005c-.305.096-.533.32-.65.639a1.187 1.187 0 0 0-.06.52c.057.309.31.59.598.667.362.095.632.033.872-.205.14-.136.215-.255.291-.448.055-.136.059-.16.059-.353l.001-.207-.072-.148a.894.894 0 0 0-.565-.472 1.02 1.02 0 0 0-.474.007Zm4.184 2c-.131.071-.223.25-.195.383.031.143.157.288.353.407.105.063.112.072.117.136.004.038-.01.146-.029.243-.02.094-.036.194-.036.222.002.074.07.195.143.253.064.052.076.054.255.059.164.005.198.001.264-.03.169-.082.212-.234.15-.525-.052-.243-.042-.28.087-.355.137-.08.281-.219.324-.314a.365.365 0 0 0-.175-.48.394.394 0 0 0-.181-.033c-.126 0-.207.03-.355.124l-.085.053-.053-.032c-.219-.13-.259-.145-.391-.143a.396.396 0 0 0-.193.032zm.39-2.195c-.373.036-.475.05-.654.086-.291.06-.68.195-.951.328-.94.46-1.589 1.226-1.787 2.114-.04.176-.045.234-.045.53 0 .294.005.357.043.524.264 1.16 1.332 2.017 2.714 2.173.3.033 1.596.033 1.896 0 1.11-.125 2.064-.727 2.493-1.571.114-.226.169-.372.22-.602.039-.167.044-.23.044-.523 0-.297-.005-.355-.045-.531-.288-1.29-1.539-2.304-3.072-2.497a6.873 6.873 0 0 0-.855-.031zm.645.937a3.283 3.283 0 0 1 1.44.514c.223.148.537.458.671.662.166.251.26.508.303.82.02.143.01.251-.043.482-.08.345-.332.705-.672.957a3.115 3.115 0 0 1-.689.348c-.382.122-.632.144-1.525.138-.582-.006-.686-.01-.853-.042-.57-.107-1.022-.334-1.35-.68-.264-.28-.385-.535-.45-.946-.03-.192.025-.509.137-.776.136-.326.488-.73.836-.963.403-.269.934-.46 1.422-.512.187-.02.586-.02.773-.002zm-5.503-11a1.653 1.653 0 0 0-.683.298C5.617.74 5.173 1.666 4.985 2.819c-.07.436-.119 1.04-.119 1.503 0 .544.064 1.24.155 1.721.02.107.031.202.023.208a8.12 8.12 0 0 1-.187.152 5.324 5.324 0 0 0-.949 1.02 5.49 5.49 0 0 0-.94 2.339 6.625 6.625 0 0 0-.023 1.357c.091.78.325 1.438.727 2.04l.13.195-.037.064c-.269.452-.498 1.105-.605 1.732-.084.496-.095.629-.095 1.294 0 .67.009.803.088 1.266.095.555.288 1.143.503 1.534.071.128.243.393.264.407.007.003-.014.067-.046.141a7.405 7.405 0 0 0-.548 1.873c-.062.417-.071.552-.071.991 0 .56.031.832.148 1.279L3.42 24h1.478l-.05-.091c-.297-.552-.325-1.575-.068-2.597.117-.472.25-.819.498-1.296l.148-.29v-.177c0-.165-.003-.184-.057-.293a.915.915 0 0 0-.194-.25 1.74 1.74 0 0 1-.385-.543c-.424-.92-.506-2.286-.208-3.451.124-.486.329-.918.544-1.154a.787.787 0 0 0 .223-.531c0-.195-.07-.355-.224-.522a3.136 3.136 0 0 1-.817-1.729c-.14-.96.114-2.005.69-2.834.563-.814 1.353-1.336 2.237-1.475.199-.033.57-.028.776.01.226.04.367.028.512-.041.179-.085.268-.19.374-.431.093-.215.165-.333.36-.576.234-.29.46-.489.822-.729.413-.27.884-.467 1.352-.561.17-.035.25-.04.569-.04.319 0 .398.005.569.04a4.07 4.07 0 0 1 1.914.997c.117.109.398.457.488.602.034.057.095.177.132.267.105.241.195.346.374.43.14.068.286.082.503.045.343-.058.607-.053.943.016 1.144.23 2.14 1.173 2.581 2.437.385 1.108.276 2.267-.296 3.153-.097.15-.193.27-.333.419-.301.322-.301.722-.001 1.053.493.539.801 1.866.708 3.036-.062.772-.26 1.463-.533 1.854a2.096 2.096 0 0 1-.224.258.916.916 0 0 0-.194.25c-.054.109-.057.128-.057.293v.178l.148.29c.248.476.38.823.498 1.295.253 1.008.231 2.01-.059 2.581a.845.845 0 0 0-.044.098c0 .006.329.009.732.009h.73l.02-.074.036-.134c.019-.076.057-.3.088-.516.029-.217.029-1.016 0-1.258-.11-.875-.295-1.57-.597-2.226-.032-.074-.053-.138-.046-.141.008-.005.057-.074.108-.152.376-.569.607-1.284.724-2.228.031-.26.031-1.378 0-1.628-.083-.645-.182-1.082-.348-1.525a6.083 6.083 0 0 0-.329-.7l-.038-.064.131-.194c.402-.604.636-1.262.727-2.04a6.625 6.625 0 0 0-.024-1.358 5.512 5.512 0 0 0-.939-2.339 5.325 5.325 0 0 0-.95-1.02 8.097 8.097 0 0 1-.186-.152.692.692 0 0 1 .023-.208c.208-1.087.201-2.443-.017-3.503-.19-.924-.535-1.658-.98-2.082-.354-.338-.716-.482-1.15-.455-.996.059-1.8 1.205-2.116 3.01a6.805 6.805 0 0 0-.097.726c0 .036-.007.066-.015.066a.96.96 0 0 1-.149-.078A4.857 4.857 0 0 0 12 3.03c-.832 0-1.687.243-2.456.698a.958.958 0 0 1-.148.078c-.008 0-.015-.03-.015-.066a6.71 6.71 0 0 0-.097-.725C8.997 1.392 8.337.319 7.46.048a2.096 2.096 0 0 0-.585-.041Zm.293 1.402c.248.197.523.759.682 1.388.03.113.06.244.069.292.007.047.026.152.041.233.067.365.098.76.102 1.24l.002.475-.12.175-.118.178h-.278c-.324 0-.646.041-.954.124l-.238.06c-.033.007-.038-.003-.057-.144a8.438 8.438 0 0 1 .016-2.323c.124-.788.413-1.501.696-1.711.067-.05.079-.049.157.013zm9.825-.012c.17.126.358.46.498.888.28.854.36 2.028.212 3.145-.019.14-.024.151-.057.144l-.238-.06a3.693 3.693 0 0 0-.954-.124h-.278l-.119-.178-.119-.175.002-.474c.004-.669.066-1.19.214-1.772.157-.623.434-1.185.68-1.382.078-.062.09-.063.159-.012z"/></svg>Ollama</span><span class="chip">RAG &amp; embeddings</span></span>
+            <span class="v-text">MongoDB · Qdrant · Ollama · RAG &amp; embeddings</span>
           </div>
           <div class="srow">
             <span class="k">Infra</span>
-            <span class="v"><span class="chip"><svg class="lg" style="--bc:#2496ED" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13.983 11.078h2.119a.186.186 0 00.186-.185V9.006a.186.186 0 00-.186-.186h-2.119a.185.185 0 00-.185.185v1.888c0 .102.083.185.185.185m-2.954-5.43h2.118a.186.186 0 00.186-.186V3.574a.186.186 0 00-.186-.185h-2.118a.185.185 0 00-.185.185v1.888c0 .102.082.185.185.185m0 2.716h2.118a.187.187 0 00.186-.186V6.29a.186.186 0 00-.186-.185h-2.118a.185.185 0 00-.185.185v1.887c0 .102.082.185.185.186m-2.93 0h2.12a.186.186 0 00.184-.186V6.29a.185.185 0 00-.185-.185H8.1a.185.185 0 00-.185.185v1.887c0 .102.083.185.185.186m-2.964 0h2.119a.186.186 0 00.185-.186V6.29a.185.185 0 00-.185-.185H5.136a.186.186 0 00-.186.185v1.887c0 .102.084.185.186.186m5.893 2.715h2.118a.186.186 0 00.186-.185V9.006a.186.186 0 00-.186-.186h-2.118a.185.185 0 00-.185.185v1.888c0 .102.082.185.185.185m-2.93 0h2.12a.185.185 0 00.184-.185V9.006a.185.185 0 00-.184-.186h-2.12a.185.185 0 00-.184.185v1.888c0 .102.083.185.185.185m-2.964 0h2.119a.185.185 0 00.185-.185V9.006a.185.185 0 00-.184-.186h-2.12a.186.186 0 00-.186.186v1.887c0 .102.084.185.186.185m-2.92 0h2.12a.185.185 0 00.184-.185V9.006a.185.185 0 00-.184-.186h-2.12a.185.185 0 00-.184.185v1.888c0 .102.082.185.185.185M23.763 9.89c-.065-.051-.672-.51-1.954-.51-.338.001-.676.03-1.01.087-.248-1.7-1.653-2.53-1.716-2.566l-.344-.199-.226.327c-.284.438-.49.922-.612 1.43-.23.97-.09 1.882.403 2.661-.595.332-1.55.413-1.744.42H.751a.751.751 0 00-.75.748 11.376 11.376 0 00.692 4.062c.545 1.428 1.355 2.48 2.41 3.124 1.18.723 3.1 1.137 5.275 1.137.983.003 1.963-.086 2.93-.266a12.248 12.248 0 003.823-1.389c.98-.567 1.86-1.288 2.61-2.136 1.252-1.418 1.998-2.997 2.553-4.4h.221c1.372 0 2.215-.549 2.68-1.009.309-.293.55-.65.707-1.046l.098-.288Z"/></svg>Docker Compose</span><span class="chip"><svg class="lg" style="--bc:#FC6D26" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m23.6004 9.5927-.0337-.0862L20.3.9814a.851.851 0 0 0-.3362-.405.8748.8748 0 0 0-.9997.0539.8748.8748 0 0 0-.29.4399l-2.2055 6.748H7.5375l-2.2057-6.748a.8573.8573 0 0 0-.29-.4412.8748.8748 0 0 0-.9997-.0537.8585.8585 0 0 0-.3362.4049L.4332 9.5015l-.0325.0862a6.0657 6.0657 0 0 0 2.0119 7.0105l.0113.0087.03.0213 4.976 3.7264 2.462 1.8633 1.4995 1.1321a1.0085 1.0085 0 0 0 1.2197 0l1.4995-1.1321 2.4619-1.8633 5.006-3.7489.0125-.01a6.0682 6.0682 0 0 0 2.0094-7.003z"/></svg>Git · GitLab CI</span><span class="chip"><svg class="lg" style="--bc:#009639" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0L1.605 6v12L12 24l10.395-6V6L12 0zm6 16.59c0 .705-.646 1.29-1.529 1.29-.631 0-1.351-.255-1.801-.81l-6-7.141v6.66c0 .721-.57 1.29-1.274 1.29H7.32c-.721 0-1.29-.6-1.29-1.29V7.41c0-.705.63-1.29 1.5-1.29.646 0 1.38.255 1.83.81l5.97 7.141V7.41c0-.721.6-1.29 1.29-1.29h.075c.72 0 1.29.6 1.29 1.29v9.18H18z"/></svg>Nginx</span><span class="chip">IAM &amp; permissions</span></span>
+            <span class="v-text">Docker Compose · Git · GitLab CI · Nginx · IAM &amp; permissions</span>
           </div>
-        </div>
-      </section>
-
-      <section class="m-block">
-        <div class="m-head"><h2>Also built</h2><span class="rule"></span></div>
-        <div class="owork">
-          <div class="ow"><b>Smart Home AI</b><span>Voice-controlled automation — intent handling and a real-time control loop.</span></div>
-          <div class="ow"><b>Unity game backends</b><span>Session state and progression rules in C#, kept honest between client and server.</span></div>
-          <div class="ow"><b>APIs for Flutter apps</b><span>REST services written for mobile clients I also built.</span></div>
         </div>
       </section>
 
