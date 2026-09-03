@@ -312,6 +312,8 @@ ul.slist li::before{
 .tag svg.lg{width:11px; height:11px}
 .chip svg.lg.mono,.tag svg.lg.mono,svg.lg.mono{color:var(--text)}
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
 <button class="pdf-btn" id="pdfBtn" type="button" aria-label="Download PDF">
@@ -486,9 +488,34 @@ ul.slist li::before{
 <script>
 (function(){
   var root=document.documentElement, tt=document.getElementById('tt'), sheet=document.getElementById('sheet'), pdfBtn=document.getElementById('pdfBtn');
-  pdfBtn.addEventListener('click', function(){ window.print(); });
-  window.addEventListener('beforeprint', function(){ sheet.style.transform='none'; });
-  window.addEventListener('afterprint', function(){ fit(); });
+  pdfBtn.addEventListener('click', function(){
+    if(pdfBtn.disabled) return;
+    pdfBtn.disabled=true;
+    var prevLabel=pdfBtn.innerHTML;
+    pdfBtn.querySelector('svg').nextSibling.textContent=' Generating…';
+    var prevTheme=root.getAttribute('data-theme');
+    var prevTransform=sheet.style.transform;
+    root.setAttribute('data-theme','light');
+    sheet.style.transform='none';
+    requestAnimationFrame(function(){ requestAnimationFrame(function(){
+      html2canvas(sheet, {scale:3, useCORS:true, backgroundColor:'#ffffff'}).then(function(canvas){
+        var jsPDF=window.jspdf.jsPDF;
+        var doc=new jsPDF({unit:'mm', format:'a4', orientation:'portrait'});
+        var img=canvas.toDataURL('image/jpeg', 0.95);
+        doc.addImage(img, 'JPEG', 0, 0, 210, 297);
+        doc.save('Kitticheat_Suttipipat_Resume.pdf');
+      }).catch(function(err){
+        console.error(err);
+        alert('Could not generate PDF. Please try again.');
+      }).finally(function(){
+        if(prevTheme) root.setAttribute('data-theme',prevTheme); else root.removeAttribute('data-theme');
+        sheet.style.transform=prevTransform;
+        fit();
+        pdfBtn.innerHTML=prevLabel;
+        pdfBtn.disabled=false;
+      });
+    }); });
+  });
   var stored=null;
   try{stored=localStorage.getItem('ks-theme');}catch(e){}
   if(stored==='dark'||stored==='light') root.setAttribute('data-theme',stored);
